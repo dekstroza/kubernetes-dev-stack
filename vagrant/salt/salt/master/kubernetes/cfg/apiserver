@@ -1,0 +1,28 @@
+###
+# kubernetes system config
+#
+# The following values are used to configure the kube-apiserver
+#
+{% set master_ip = salt['grains.get']('master_ip') %}
+
+# The address on the local server to listen to.
+KUBE_API_ADDRESS="--address={{ master_ip }}"
+
+# The port on the local server to listen on.
+KUBE_API_PORT="--port=8080"
+
+# Port minions listen on
+KUBELET_PORT="--kubelet_port=10250"
+
+# Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS="--etcd_servers=http://127.0.0.1:2379"
+
+# Address range to use for services
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ pillar['service_cluster_cidr'] }}"
+
+# default admission control policies
+#KUBE_ADMISSION_CONTROL="--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
+
+# Add your own!
+KUBE_API_ARGS="--token-auth-file=/dev/null --cors_allowed_origins=.* --allow-privileged=true "
+

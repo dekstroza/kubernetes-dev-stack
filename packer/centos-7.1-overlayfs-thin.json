@@ -1,0 +1,70 @@
+{
+  "builders": [{
+    "type": "virtualbox-iso",
+    "boot_wait": "10s",
+    "guest_os_type": "RedHat_64",
+    "iso_checksum_type": "md5",
+    "iso_checksum": "d07ab3e615c66a8b2e9a50f4852e6a77",
+    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_wait_timeout": "20000s",
+    "ssh_port": 22,
+    "headless": "false",
+    "type": "virtualbox-iso",
+    "shutdown_command": "sudo -S shutdown -P now",
+    "http_directory": "http",
+    "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "1"
+        ]
+      ],
+    "virtualbox_version_file": ".vbox_version",
+    "boot_command": [
+      "<wait><esc><esc>",
+      "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/kickstart<enter>"
+    ]
+  }],
+ "push": {
+      "name": "dekstroza/kube-overlay-xfs"
+    },
+"provisioners": [
+    {
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "scripts": [
+        "scripts/install-vbox-tools.sh",
+        "scripts/docker-cfg.sh",
+        "scripts/update-kubernetes.sh",
+        "scripts/compact.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+"post-processors": [ 
+  [{
+        "type": "vagrant",
+        "keep_input_artifact": false
+    },
+    {
+        "type": "atlas",
+        "only": ["virtualbox-iso"],
+        "artifact": "dekstroza/kube-overlay-xfs",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "virtualbox",
+          "created_at": "{{timestamp}}",
+          "version": "1.0.0"
+        }
+     }
+ ]]
+}
+

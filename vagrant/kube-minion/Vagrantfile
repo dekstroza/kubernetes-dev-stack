@@ -1,0 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Require a recent version of vagrant otherwise some have reported errors setting host names on boxes
+Vagrant.require_version ">= 1.6.2"
+
+if ENV['MASTER_IP'].to_s == ""
+  raise Vagrant::Errors::VagrantError.new, <<END
+Unable to start minions without master ip address, please set MASTER_IP env variable.
+END
+end
+
+$box_to_use = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
+$num_minion = (ENV['NUM_MINIONS'] || 1).to_i
+$vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
+$master_ip = (ENV['MASTER_IP']).to_s
+
+Vagrant.configure(2) do |config|
+ $num_minion.times do |n|
+  minion_vm_name = "minion-#{n+1}"
+  config.vm.define minion_vm_name do |minion|
+    minion.vm.synced_folder "../salt/", "/srv/"
+    minion.vm.network "public_network"
+    minion.vm.provision "shell" do |s|
+      s.inline = "echo -e master_ip: $1 >> /etc/salt/grains;echo -e nfs_ip: $1 >> /etc/salt/grains"
+      s.args = $master_ip
+    end 
+    minion.vm.provision "shell", path: "configure.sh"
+    minion.vm.provider :virtualbox do |v, override|
+      override.vm.box = $box_to_use
+      v.memory = $vm_mem_size
+      v.cpus = $vm_cpus
+      v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      v.customize ["modifyvm", :id, "--nictype2", "virtio"]
+    end
+  end
+ end
+
+
+
+
+# Give access to all physical cpu cores
+# Previously cargo-culted from here:
+# http://www.stefanwrobel.com/how-to-make-vagrant-performance-not-suck
+# Rewritten to actually determine the number of hardware cores instead of assuming
+# that the host has hyperthreading enabled.
+host = RbConfig::CONFIG['host_os']
+if host =~ /darwin/
+  $vm_cpus = `sysctl -n hw.physicalcpu`.to_i
+elsif host =~ /linux/
+  #This should work on most processors, however it will fail on ones without the core id field.
+  #So far i have only seen this on a raspberry pi. which you probably don't want to run vagrant on anyhow...
+  #But just in case we'll default to the result of nproc if we get 0 just to be safe.
+  $vm_cpus = `cat /proc/cpuinfo | grep 'core id' | sort -u | wc -l`.to_i
+  if $vm_cpus < 1
+      $vm_cpus = `nproc`.to_i
+  end
+else # sorry Windows folks, I can't help you
+  $vm_cpus = 4
+end
+end
+

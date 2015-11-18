@@ -1,0 +1,17 @@
+{% set master_ip = salt['grains.get']('master_ip') %}
+apiVersion: v1
+clusters:
+- cluster:
+    server: http://{{ master_ip }}:8080
+  name: default
+contexts:
+- context:
+    cluster: default
+    user: root
+  name: default-context
+current-context: default-context
+kind: Config
+preferences:
+  colors: true
+users: []
+

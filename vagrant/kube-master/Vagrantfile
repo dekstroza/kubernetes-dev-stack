@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Require a recent version of vagrant otherwise some have reported errors setting host names on boxes
+Vagrant.require_version ">= 1.6.2"
+
+
+$box_to_use = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
+$vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
+
+Vagrant.configure(2) do |config|
+  config.vm.define "kube-master" do |master|
+    master.vm.synced_folder "../salt/", "/srv/"
+    master.vm.network "public_network"
+    master.vm.provision "shell", path: "configure.sh"
+    master.vm.provider :virtualbox do |v, override|
+      override.vm.box = $box_to_use
+      v.memory = $vm_mem_size
+      v.cpus = $vm_cpus
+      v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      v.customize ["modifyvm", :id, "--nictype2", "virtio"]
+    end
+  end
+
+
+
+
+
+# Give access to all physical cpu cores
+# Previously cargo-culted from here:
+# http://www.stefanwrobel.com/how-to-make-vagrant-performance-not-suck
+# Rewritten to actually determine the number of hardware cores instead of assuming
+# that the host has hyperthreading enabled.
+host = RbConfig::CONFIG['host_os']
+if host =~ /darwin/
+  $vm_cpus = `sysctl -n hw.physicalcpu`.to_i
+elsif host =~ /linux/
+  #This should work on most processors, however it will fail on ones without the core id field.
+  #So far i have only seen this on a raspberry pi. which you probably don't want to run vagrant on anyhow...
+  #But just in case we'll default to the result of nproc if we get 0 just to be safe.
+  $vm_cpus = `cat /proc/cpuinfo | grep 'core id' | sort -u | wc -l`.to_i
+  if $vm_cpus < 1
+      $vm_cpus = `nproc`.to_i
+  end
+else # sorry Windows folks, I can't help you
+  $vm_cpus = 4
+end
+end
+
