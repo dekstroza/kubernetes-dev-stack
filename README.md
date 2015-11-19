@@ -74,10 +74,34 @@ Kubernetes master should be up and running for you:
 
     ## and open up Grafana url shown in your browser.
 
-Also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain dekstroza.local
+Also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local**
 
+To verify dns is up and running, inside master or minions, run:
+
+    dig @10.0.0.10 kuberenetes.default.svc.dekstroza.local
+
+If you have added route as described above, dns will be reachable  not only from inside the VM, but also from your host OS.
 You can find configuration for it in salt/pillar/kube-global.sls
 and set different cluster CIDR, service CIDR, DNS domain or DNS IP address. After changing any of these, running salt-stack can reconfigure your already running VM, but I would recommend to restart your VMs (master and minions).
+Bellow is current content:
+
+    ## cat kube-global.sls:
+    service_cluster_cidr: 10.0.0.0/16
+    kube_cluster_cidr: 10.244.0.0/16
+    dns_replicas: 1
+    dns_server: 10.0.0.10
+    dns_domain: dekstroza.local
+    cluster_registry_disk_size: 1G
+
+Important bits are:
+- service_cluster_cidr : Range from which kuberentes nodes will     get address for internal communication
+- kube_cluster_cidr : Range from which services in kubernetes will get address
+- dns_replicas : Number of DNS server replicas
+- dns_server : IP that will be assigned to DNS server
+- dns_domain : Chosen DNS domain
+- cluster_registry_disk_size : Internal docker registry disk size
+
+*Note cluster_registry_disk_size is not used and has not been tested*
 
 #### Starting kube minion(s)
 
