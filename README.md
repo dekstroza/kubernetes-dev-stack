@@ -1,9 +1,16 @@
 # Kubernetes Dev-Stack
 
 ## Background
-Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. Vagrant box is based on Centos 7.1 with latest stable kernel 4.3.0, docker 1.8.2 using overlay storage driver, backed by xfs file system. SELinux will be set to permissive mode, and firewall will be down.
+Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. Vagrant box is based on Centos 7.1 with latest stable kernel 4.3.0, docker 1.8.2 using overlay storage driver, backed by xfs file system, kubernetes is at the latest version 1.1.1. SELinux will be set to permissive mode, and firewall will be down.
 
 **This is little demo was created for the purpose of development, and should not be used in production, as kubernetes is configured without security.**
+
+### What's inside the tin can
+- Centos 7.1 kernel 4.3.0, xfs
+- Docker 1.8.2, overlay storage driver
+- Kubernetes 1.1.1 with cluster-addons
+- Saltstack 2015.5.5-1
+
 
 ### Requirements
 1. VirtualBox, recent version, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
@@ -42,11 +49,19 @@ You can now ssh into your kubernetes master with:
 
 Kubernetes master should be up and running for you:
 
+    ## Bellow will show you all kube memebers
     kubectl get nodes
+
+    ## Bellow will show everything that currently Requirements
+    ## in kube-system namespace (dns, ui, grafana etc..)
     kubectl get po --namespace=kube-system
+
+    ## Gives you cluster info, all cluster services running
     kubectl cluster-info
+
     ## You can start kube-ui or grafana as example:
     sudo kubectl create -f /etc/kubernetes/kube-ui/
+
     ## Or Graphana:
     sudo kubectl create -f /etc/kubernetes/grafana/
 
@@ -59,7 +74,10 @@ Kubernetes master should be up and running for you:
 
     ## and open up Grafana url shown in your browser.
 
-will confirm it, also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images.  
+Also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain dekstroza.local
+
+You can find configuration for it in salt/pillar/kube-global.sls
+and set different cluster CIDR, service CIDR, DNS domain or DNS IP address. After changing any of these, running salt-stack can reconfigure your already running VM, but I would recommend to restart your VMs (master and minions).
 
 #### Starting kube minion(s)
 
@@ -73,7 +91,7 @@ Change directory to kube-minion:
     ## Set MEM_SIZE if you wish more or less then 4Gig for ## minion(s)
     ## Set NUM_MINIONS=n, where n is number of minions you wish to ## start
 
-Vagrant will start up your minions and salt-stack will configure them correctly. Again, depending on your network setup, you might be asked to select network interface over which minions will communincate (normally one you use to access Internet, normally choice #1).
+Vagrant will start up your minions and salt-stack will configure them correctly. Again, depending on your network setup, you might be asked to select network interface over which minions will communicate (normally one you use to access Internet, normally choice #1).
 
 #### Master and minions on separate machines
 
@@ -89,5 +107,5 @@ Salt-stack is used to configure VM upon startup, you can find configuration in s
 
 Vagrant will mount directory where Vagrantfile is located inside the VM, under /vagrant path. You can use this to add more files into the box, ie pass in docker images instead of downloading them.
 
-Happy hacking.
+Happy hacking....
 Dejan
