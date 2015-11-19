@@ -26,12 +26,14 @@ To start kubernetes master (which will also be used to schedule docker container
 
 After initial download of vagrant box (once off download, 450Mb) from vagrant repository, box will be automatically configured, and depending on network setup on your machine, it might ask you which network interface you wish to use - normally choose one you use to connect to Internet (normally choice #1 is what you need), but can vary depending on the machine.
 
-Since kubernetes operates on separate network, script to create route to your newly created kubernetes cloud will be generated in the same dir, so run:
+Since kubernetes operates on separate network, script to create route to your newly created kubernetes cloud will be generated in the same dir (for Windows, Linux and Mac), so run:
 
     ## Depending on your os, for example Linux:
+
     ./add-route-LIN.sh
+
     ## Which will create route
-    using your VM as gateway.
+    ## using your VM as gateway.
 
 
 You can now ssh into your kubernetes master with:
@@ -52,9 +54,10 @@ Kubernetes master should be up and running for you:
     watch -n 5 kubectl get po --namespace=kube-system
 
     ## Once up and running cluster-info will tell you where to go:
-    ## So do:
+
     kubectl cluster-info
-    ## and open up Grafana url shown
+
+    ## and open up Grafana url shown in your browser.
 
 will confirm it, also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images.  
 
@@ -81,6 +84,10 @@ Since master and minions will be bridged to your host interface they can be on d
 Packer template provided in the repo is used to create vagrant box, in case you wish to create your own. Code here will use one I have already created and deployed to vagrant repository.
 
 Salt-stack is used to configure VM upon startup, you can find configuration in salt directory.
+
+#### Adding files into running master or minion
+
+Vagrant will mount directory where Vagrantfile is located inside the VM, under /vagrant path. You can use this to add more files into the box, ie pass in docker images instead of downloading them.
 
 Happy hacking.
 Dejan
