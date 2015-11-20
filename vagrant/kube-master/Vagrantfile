@@ -21,7 +21,6 @@ Vagrant.configure(2) do |config|
     if ENV['NETWORK_TYPE'].to_s == "private"
       master.vm.network "private_network", type: "dhcp"
     end
-
     master.vm.provision "shell", path: "configure.sh"
     master.vm.provider :virtualbox do |v, override|
       override.vm.box = $box_to_use
@@ -30,11 +29,37 @@ Vagrant.configure(2) do |config|
       v.customize ["modifyvm", :id, "--nictype1", "virtio"]
       v.customize ["modifyvm", :id, "--nictype2", "virtio"]
     end
+    master.vm.provider :parallels do |v, override|
+      override.vm.box = $box_to_use
+      v.memory = $vm_mem_size
+      v.cpus = $vm_cpus
+      v.update_guest_tools = false
+      # Set up Parallels folder sharing to behave like VirtualBox (i.e.,
+      # mount the current directory as /vagrant and that's it)
+      v.customize ['set', :id, '--shf-guest', 'off']
+      v.customize ['set', :id, '--shf-guest-automount', 'off']
+      v.customize ['set', :id, '--shf-host', 'on']
+      # Remove all auto-mounted "shared folders"; the result seems to
+      # persist between runs (i.e., vagrant halt && vagrant up)
+      override.vm.provision :shell, :inline => (%q{
+        if [ -d /media/psf ]; then
+          for i in /media/psf/*; do
+            if [ -d "${i}" ]; then
+              umount "${i}" || true
+              rmdir -v "${i}"
+            fi
+          done
+          rmdir -v /media/psf
+        fi
+        ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1) 
+        echo -e "roles:\n  - kube-master" >> /etc/salt/grains
+        echo -e master_ip: $ip >> /etc/salt/grains
+        /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
+        salt-call state.highstate -l quiet
+        exit
+      }).strip
+    end
   end
-
-
-
-
 
 # Give access to all physical cpu cores
 # Previously cargo-culted from here:

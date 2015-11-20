@@ -1,16 +1,7 @@
 #!/bin/bash
 
-echo -e "roles:\n  - kube-master" >> /etc/salt/grains
-ifconfig eth0 down && sleep 5 && ifconfig eth0 up
 ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1)
 echo "VM bridged IP is: $ip"
-echo -e "master_ip: $ip" >> /etc/salt/grains
-echo -e "nfs_ip: $ip" >> /etc/salt/grains
-sed -i -- 's/\#file_client:\ remote/file_client:\ local/g' /etc/salt/minion
-echo "Configuration started ..."
-salt-call state.highstate -l quiet
-echo "Completed ..."
-
 
 ### add route command for OSX
 echo -e "sudo route -n delete 10.0.0.0/16 \nsudo route -n add 10.0.0.0/16 $ip" > /vagrant/add-route-osX.sh && chmod +x /vagrant/add-route-osX.sh
