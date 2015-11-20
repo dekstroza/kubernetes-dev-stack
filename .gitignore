@@ -1,3 +1,5 @@
 .vagrant/
 **/add-route*
 packer_cache/
+**/*.box
+

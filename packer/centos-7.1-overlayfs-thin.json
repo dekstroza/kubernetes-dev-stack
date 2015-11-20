@@ -33,7 +33,30 @@
       "<wait><esc><esc>",
       "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/kickstart<enter>"
     ]
-  }],
+  },
+   {
+    "type": "parallels-iso",
+    "guest_os_type": "rhel",
+    "iso_checksum_type": "md5",
+    "iso_checksum": "d07ab3e615c66a8b2e9a50f4852e6a77",
+    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso",
+    "parallels_tools_flavor": "lin",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_wait_timeout": "20000s",
+    "http_directory": "http",
+    "ssh_port": 22,
+    "shutdown_command": "sudo -S shutdown -P now",
+    "prlctl": [
+      ["set", "{{.Name}}", "--memsize", "1024"],
+      ["set", "{{.Name}}", "--cpus", "2"]
+    ],
+    "boot_command": [
+      "<wait><esc><esc>",
+      "linux ks=http://{{.HTTPIP}}:{{.HTTPPort}}/kickstart<enter>"
+    ]
+   }
+],
  "push": {
       "name": "dekstroza/kube-overlay-xfs"
     },
@@ -56,13 +79,21 @@
     },
     {
         "type": "atlas",
-        "only": ["virtualbox-iso"],
+        "artifact": "dekstroza/kube-overlay-xfs",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "parallels",
+          "created_at": "{{timestamp}}",
+          "version": "1.1.0"
+        }
+     },
+     {
+        "type": "atlas",
         "artifact": "dekstroza/kube-overlay-xfs",
         "artifact_type": "vagrant.box",
         "metadata": {
           "provider": "virtualbox",
-          "created_at": "{{timestamp}}",
-          "version": "1.0.0"
+          "created_at": "{{timestamp}}"
         }
      }
  ]]
