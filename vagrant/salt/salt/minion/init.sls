@@ -44,3 +44,10 @@ kube-proxy-running:
     - require:
       - service: kubelet
 
+create-routing-scripts:
+  cmd.script:
+    - source: salt://minion/post-boot-scripts/configure.sh
+    - user: root
+    - template: jinja
+    - require:
+      - service: kube-proxy

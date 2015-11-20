@@ -96,6 +96,14 @@ kube-proxy:
     - require:
       - service: kubelet
 
+create-routing-scripts:
+  cmd.script:
+    - source: salt://master/post-boot-scripts/configure.sh
+    - user: root
+    - template: jinja
+    - require:
+      - service: kube-proxy
+
 run-kube-dns:
   cmd.run:
     - name: kubectl -s {{ master_ip }}:8080 create -f /etc/kubernetes/dns/

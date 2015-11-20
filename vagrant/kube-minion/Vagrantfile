@@ -35,13 +35,6 @@ Vagrant.configure(2) do |config|
       s.inline = "echo -e \"roles:\n  - kube-minion\" >> /etc/salt/grains;echo -e master_ip: $1 >> /etc/salt/grains"
       s.args = $master_ip
     end
-    minion.vm.provision "shell" do |s|
-      s.inline = "/usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up"
-    end
-    minion.vm.provision "shell" do |s|
-      s.inline = "salt-call state.highstate -l quiet"
-    end
-    minion.vm.provision "shell", path: "configure.sh"
     minion.vm.provider :virtualbox do |v, override|
       override.vm.box = $box_to_use
       v.memory = $vm_mem_size
@@ -56,7 +49,7 @@ Vagrant.configure(2) do |config|
       v.cpus = $vm_cpus
       # Don't attempt to update the Parallels tools on the image (this can
       # be done manually if necessary)
-      v.update_guest_tools = false # v.customize ['set', :id, '--tools-autoupdate', 'off']
+      v.update_guest_tools = false
 
       # Set up Parallels folder sharing to behave like VirtualBox (i.e.,
       # mount the current directory as /vagrant and that's it)
@@ -70,12 +63,23 @@ Vagrant.configure(2) do |config|
         if [ -d /media/psf ]; then
           for i in /media/psf/*; do
             if [ -d "${i}" ]; then
-              umount "${i}" || true
-              rmdir -v "${i}"
+              (umount "${i}" || true) > /dev/null 2>&1
+              rmdir -v "${i}" > /dev/null 2>&1
             fi
           done
-          rmdir -v /media/psf
+          rmdir -v /media/psf > /dev/null 2>&1
         fi
+        /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
+        salt-call state.highstate -l quiet
+        echo "#################################################################################"
+        echo "# Please create route to your cloud by running:                                 #"
+        echo "# 1. For MacOS, please run:   add-route-osX.sh                                  #"
+        echo "# 2. For Linux, please run:   add-route-LIN.sh                                  #"
+        echo "# 3. For Windows, please run: add-route-WIN.bat                                 #"
+        echo "#                                                                               #"
+        echo "#             SSH into machine with vagrant ssh command                         #"
+        echo "#                         ~Have fun, Dejan~                                     #"
+        echo "#################################################################################" 
         exit
       }).strip
     end
