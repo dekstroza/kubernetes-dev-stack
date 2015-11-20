@@ -14,7 +14,14 @@ $vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
 Vagrant.configure(2) do |config|
   config.vm.define "kube-master" do |master|
     master.vm.synced_folder "../salt/", "/srv/"
-    master.vm.network "public_network"
+    
+    if ENV['NETWORK_TYPE'].to_s == "" then
+      master.vm.network "public_network"
+    end
+    if ENV['NETWORK_TYPE'].to_s == "private"
+      master.vm.network "private_network", type: "dhcp"
+    end
+
     master.vm.provision "shell", path: "configure.sh"
     master.vm.provider :virtualbox do |v, override|
       override.vm.box = $box_to_use
