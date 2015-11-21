@@ -119,6 +119,12 @@ correct-kube-dir-privs:
     - name: mkdir -p /var/run/kubernetes && chown kube:kube /var/run/kubernetes/ -R
     - unless: ls -ld /var/run/kubernetes | awk '{print $3}' | grep kube
 
+correct-kubectl-schema-privs:
+  cmd.run:
+    - name: chmod +rw /tmp/kubectl.schema/ -R
+    - require:
+      - service: kube-proxy
+
 dns-rc-setup:
   file.managed:
     - name: /etc/kubernetes/dns/skydns-rc.yaml
