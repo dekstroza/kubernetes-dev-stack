@@ -8,9 +8,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.6.2"
 
 
-$box_to_use = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
 $vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
-
 Vagrant.configure(2) do |config|
   config.vm.define "kube-master" do |master|
     master.vm.synced_folder "../salt/", "/srv/"
@@ -22,14 +20,32 @@ Vagrant.configure(2) do |config|
       master.vm.network "private_network", type: "dhcp"
     end
     master.vm.provider :virtualbox do |v, override|
-      override.vm.box = $box_to_use
+      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
       v.customize ["modifyvm", :id, "--nictype1", "virtio"]
       v.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      override.vm.provision :shell, :inline => (%q{
+       ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1)
+       echo -e "roles:\n  - kube-master" >> /etc/salt/grains
+       echo -e master_ip: $ip >> /etc/salt/grains
+       echo -e nfs_ip: $ip >> /etc/salt/grains
+       /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
+       salt-call state.highstate -l quiet
+       echo "#################################################################################"
+       echo "# Please create route to your cloud by running:                                 #"
+       echo "# 1. For MacOS, please run:   add-route-osX.sh                                  #"
+       echo "# 2. For Linux, please run:   add-route-LIN.sh                                  #"
+       echo "# 3. For Windows, please run: add-route-WIN.bat                                 #"
+       echo "#                                                                               #"
+       echo "#             SSH into machine with vagrant ssh command                         #"
+       echo "#                         ~Have fun, Dejan~                                     #"
+       echo "#################################################################################"
+       exit
+      }).strip
     end
     master.vm.provider :parallels do |v, override|
-      override.vm.box = $box_to_use
+      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
       v.update_guest_tools = false
@@ -53,6 +69,7 @@ Vagrant.configure(2) do |config|
         ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1) 
         echo -e "roles:\n  - kube-master" >> /etc/salt/grains
         echo -e master_ip: $ip >> /etc/salt/grains
+        echo -e nfs_ip: $ip >> /etc/salt/grains
         /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
         salt-call state.highstate -l quiet
         echo "#################################################################################"

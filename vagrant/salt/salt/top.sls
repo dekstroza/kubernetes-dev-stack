@@ -9,4 +9,5 @@ base:
     - match: grain
     - master
     - ntpd
+    - nfs
 

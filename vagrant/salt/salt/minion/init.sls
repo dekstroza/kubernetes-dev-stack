@@ -3,6 +3,15 @@ include:
    - minion.docker
    - minion.kubernetes
 
+{% set nfs_ip = salt['grains.get']('nfs_ip') %}
+
+dekstroza-nfs-server:
+  host.present:
+    - ip: {{ nfs_ip }}
+    - names:
+      - nfs
+      - nfs.{{ pillar['dns_domain'] }}
+
 permissive:
     selinux.mode
 

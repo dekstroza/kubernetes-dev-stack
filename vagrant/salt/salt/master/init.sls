@@ -6,9 +6,18 @@ include:
 
 
 {% set master_ip = salt['grains.get']('master_ip') %}
+{% set nfs_ip = salt['grains.get']('nfs_ip') %}
 
 permissive:
     selinux.mode
+
+dekstroza-nfs-server:
+  host.present:
+    - ip: {{ nfs_ip }}
+    - names:
+      - nfs
+      - nfs.{{ pillar['dns_domain'] }}
+
 
 firewalld:
   service.dead:

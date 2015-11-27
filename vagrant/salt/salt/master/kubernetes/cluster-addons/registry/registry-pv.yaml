@@ -5,12 +5,11 @@ metadata:
   labels:
     kubernetes.io/cluster-service: "true"
 spec:
-{% if pillar.get('cluster_registry_disk_type', '') == 'gce' %}
   capacity:
     storage: {{ pillar['cluster_registry_disk_size'] }}
   accessModes:
     - ReadWriteOnce
-  gcePersistentDisk:
-    pdName: "{{ pillar['cluster_registry_disk_name'] }}"
-    fsType: "ext4"
-{% endif %}
+  nfs:
+    server: nfs.dekstroza.local
+    path: /opt/docker-registry
+
