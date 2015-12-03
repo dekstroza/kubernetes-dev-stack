@@ -55,7 +55,7 @@ Kubernetes master should be up and running for you:
     ## Bellow will show you all kube memebers
     kubectl get nodes
 
-    ## Bellow will show everything that currently Requirements
+    ## Bellow will show everything that currently runs
     ## in kube-system namespace (dns, ui, grafana etc..)
     kubectl get po --namespace=kube-system
 
@@ -132,7 +132,7 @@ Salt-stack is used to configure VM upon startup, you can find configuration in s
 
 #### Adding files into running master or minion
 
-Vagrant will mount directory where Vagrantfile is located inside the VM, under /vagrant path. You can use this to add more files into the box, ie pass in docker images instead of downloading them.
+Vagrant will mount Vagrantfile directory inside the VM, under /vagrant path. You can use this to add more files into the box, ie pass in docker images instead of downloading them.
 
 Happy hacking....
 Dejan
