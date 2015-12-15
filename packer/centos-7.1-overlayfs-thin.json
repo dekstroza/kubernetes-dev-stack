@@ -67,6 +67,7 @@
         "scripts/install-vbox-tools.sh",
         "scripts/docker-cfg.sh",
         "scripts/update-kubernetes.sh",
+        "scripts/update-flannel.sh",
         "scripts/compact.sh"
       ],
       "type": "shell"
@@ -84,7 +85,7 @@
         "metadata": {
           "provider": "parallels",
           "created_at": "{{timestamp}}",
-          "version": "1.1.0"
+          "version": "1.2.0"
         }
      },
      {
@@ -93,7 +94,8 @@
         "artifact_type": "vagrant.box",
         "metadata": {
           "provider": "virtualbox",
-          "created_at": "{{timestamp}}"
+          "created_at": "{{timestamp}}",
+	  "version": "1.2.0"
         }
      }
  ]]

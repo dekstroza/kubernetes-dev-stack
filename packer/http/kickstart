@@ -118,12 +118,6 @@ EOF
 /bin/echo 'UseDNS no' >> /etc/ssh/sshd_config
 /bin/echo '127.0.0.1   vagrant-centos-7.vagrantup.com' >> /etc/hosts
 sed -i -- 's/\#file_client:\ remote/file_client:\ local/g' /etc/salt/minion
-curl -L https://github.com/coreos/flannel/releases/download/v0.5.4/flannel-0.5.4-linux-amd64.tar.gz -o flannel-0.5.4-linux-amd64.tar.gz
-tar zxvf flannel-0.5.4-linux-amd64.tar.gz
-cp -f flannel-0.5.4/flanneld /bin/flanneld
-cp -f flannel-0.5.4/mk-docker-opts.sh /usr/libexec/flannel/mk-docker-opts.sh
-rm -rf flannel-0.5.4
-rm -rf flannel-0.5.4-linux-amd64.tar.gz
 echo 'tsflags=nodocs' >> /etc/yum.conf
 yum update -y && rm -rf /var/cache/yum
 
