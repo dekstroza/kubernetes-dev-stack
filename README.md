@@ -118,6 +118,8 @@ Change directory to kube-minion:
 
     ## Set MEM_SIZE if you wish more or less then 4Gig for ## minion(s)
     ## Set NUM_MINIONS=n, where n is number of minions you wish to ## start
+    ## Start the VM ##
+    vagrant up --provider=virtualbox
 
 Vagrant will start up your minions and salt-stack will configure them correctly. Again, depending on your network setup, you might be asked to select network interface over which minions will communicate (normally one you use to access Internet, normally choice #1).
 
