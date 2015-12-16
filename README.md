@@ -112,12 +112,12 @@ Important bits are:
 Change directory to kube-minion:
 
     cd kubernetes-dev-stack/vagrant/kube-minion
-    ## Set the MASTER_IP to point to your kubeernetes master
+    ## Set the MASTER_IP env to point to your kubeernetes master
 
     export MASTER_IP= ip address of your master
 
-    ## Set MEM_SIZE if you wish more or less then 4Gig for ## minion(s)
-    ## Set NUM_MINIONS=n, where n is number of minions you wish to ## start
+    ## Set MEM_SIZE env if you wish more or less then 4Gig for minion(s) ##
+    ## Set NUM_MINIONS=n env, where n is number of minions you wish to start ##
     ## Start the VM ##
     vagrant up --provider=virtualbox
 
