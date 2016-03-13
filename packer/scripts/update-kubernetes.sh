@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "####### Updating kubernetes to version 1.1.3 #########"
+echo "####### Updating kubernetes to version 1.1.8 #########"
 cd /tmp
-curl -L https://github.com/kubernetes/kubernetes/releases/download/v1.1.3/kubernetes.tar.gz -o kubernetes-1.1.3.tar.gz
-tar zxvf kubernetes-1.1.3.tar.gz
+curl -L https://github.com/kubernetes/kubernetes/releases/download/v1.1.8/kubernetes.tar.gz -o kubernetes-1.1.8.tar.gz
+tar zxvf kubernetes-1.1.8.tar.gz
 cd kubernetes/server
 tar zxvf kubernetes-server-linux-amd64.tar.gz
 cd kubernetes/server/bin
@@ -12,6 +12,6 @@ cd /tmp/kubernetes/cluster
 cp -r addons /etc/
 cd /tmp
 rm -rf kubernetes
-rm -rf kubernetes-1.1.3.tar.gz
-echo "####### Updating kubernetes to 1.1.3 Done... #########"
+rm -rf kubernetes-1.1.8.tar.gz
+echo "####### Updating kubernetes to 1.1.8 Done... #########"
 

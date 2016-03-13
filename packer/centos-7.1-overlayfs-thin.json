@@ -4,8 +4,8 @@
     "boot_wait": "10s",
     "guest_os_type": "RedHat_64",
     "iso_checksum_type": "md5",
-    "iso_checksum": "d07ab3e615c66a8b2e9a50f4852e6a77",
-    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso",
+    "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
+    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
     "ssh_wait_timeout": "20000s",
@@ -38,8 +38,8 @@
     "type": "parallels-iso",
     "guest_os_type": "rhel",
     "iso_checksum_type": "md5",
-    "iso_checksum": "d07ab3e615c66a8b2e9a50f4852e6a77",
-    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso",
+    "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
+    "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
     "parallels_tools_flavor": "lin",
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
@@ -85,7 +85,7 @@
         "metadata": {
           "provider": "parallels",
           "created_at": "{{timestamp}}",
-          "version": "1.2.0"
+          "version": "1.3.0"
         }
      },
      {
@@ -95,7 +95,7 @@
         "metadata": {
           "provider": "virtualbox",
           "created_at": "{{timestamp}}",
-	  "version": "1.2.0"
+	  "version": "1.3.0"
         }
      }
  ]]

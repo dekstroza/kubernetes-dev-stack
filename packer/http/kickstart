@@ -20,10 +20,10 @@ bootloader --location=mbr --append="crashkernel=auto rhgb quiet"
 user --name=vagrant --groups=wheel --password=vagrant
 reboot
 
-repo --name=base --baseurl=http://mirror.strencom.net/centos/7.1.1503/os/x86_64/
-url --url="http://mirror.strencom.net/centos/7.1.1503/os/x86_64/"
+repo --name=base --baseurl=http://mirror.strencom.net/centos/7.2.1511/os/x86_64/
+url --url="http://mirror.strencom.net/centos/7.2.1511/os/x86_64/"
 
-repo --name=centos7.1-x86_64-extras --baseurl=http://mirror.strencom.net/centos/7.1.1503/extras/x86_64/
+repo --name=centos7.2-x86_64-extras --baseurl=http://mirror.strencom.net/centos/7.2.1511/extras/x86_64/
 repo --name=epel-release --baseurl=http://anorien.csc.warwick.ac.uk/mirrors/epel/7/x86_64/
 repo --name=elrepo-kernel --baseurl=http://elrepo.org/linux/kernel/el7/x86_64/
 repo --name=elrepo-release --baseurl=http://elrepo.org/linux/elrepo/el7/x86_64/
