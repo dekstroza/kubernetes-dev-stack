@@ -1,0 +1,2 @@
+
+KUBE_PROXY_ARGS="--bind-address={{ salt['network.interfaces']()['eth1']['inet'][0]['address'] }} --cluster-cidr={{ pillar['kube_cluster_cidr'] }} --proxy-mode=iptables --hostname_override={{ salt['network.interfaces']()['eth1']['inet'][0]['address'] }} --kubeconfig=/var/lib/kubelet/kubeconfig"

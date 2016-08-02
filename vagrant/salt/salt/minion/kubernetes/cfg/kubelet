@@ -1,6 +1,8 @@
 ###
 # kubernetes kubelet (minion) config
 
+{% set master_ip = salt['grains.get']('master_ip') %}
+
 # The address for the info server to serve on (set to 0.0.0.0 or "" for all interfaces)
 KUBELET_ADDRESS="--address={{ salt['network.interfaces']()['eth1']['inet'][0]['address'] }}"
 
@@ -12,8 +14,7 @@ KUBELET_HOSTNAME="--hostname_override={{ salt['network.interfaces']()['eth1']['i
 
 # location of the api-server
 {% set master_ip = salt['grains.get']('master_ip') %}
-KUBELET_API_SERVER="--api_servers=http://{{ master_ip }}:8080"
+KUBELET_API_SERVER="--api_servers=https://{{ master_ip }}:6443"
 
 # Add your own!
-KUBELET_ARGS="--allow-privileged=true --cluster-dns={{ pillar['dns_server'] }} --cluster-domain={{ pillar['dns_domain'] }}"
-
+KUBELET_ARGS="--cluster-dns={{ master_ip }} --cluster-domain={{ pillar['dns_domain'] }} --kubeconfig=/var/lib/kubelet/kubeconfig"

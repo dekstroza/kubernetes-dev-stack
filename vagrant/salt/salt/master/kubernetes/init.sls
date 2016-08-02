@@ -7,7 +7,7 @@ kube-apiserver-config:
      - mode: 644
      - template: jinja
 
-kube-config:
+kubernetes-config:
    file.managed:
      - name: /etc/kubernetes/config
      - user: root
@@ -25,6 +25,15 @@ kube-controller-manager:
      - mode: 644
      - template: jinja
 
+kube-scheduler:
+ file.managed:
+     - name: /etc/kubernetes/scheduler
+     - user: root
+     - group: root
+     - source: salt://master/kubernetes/cfg/scheduler
+     - mode: 644
+     - template: jinja
+
 kubelet-config:
    file.managed:
      - name: /etc/kubernetes/kubelet
@@ -34,22 +43,52 @@ kubelet-config:
      - mode: 644
      - template: jinja
 
-kubectl-config:
+kube-proxy-config:
    file.managed:
-     - name: /root/.kube/config
+     - name: /etc/kubernetes/proxy
      - user: root
      - group: root
-     - source: salt://master/kubernetes/cfg/kubectl-config
+     - source: salt://master/kubernetes/cfg/proxy
+     - mode: 644
+     - template: jinja
+
+#kubectl-config:
+#   file.managed:
+#     - name: /root/.kube/config
+#     - user: root
+#     - group: root
+#     - source: salt://master/kubernetes/cfg/kubectl-config
+#     - mode: 644
+#     - template: jinja
+#     - makedirs: True
+
+## Configuration file for all auth with api server ##
+kubeconfig:
+   file.managed:
+     - name: /var/lib/kubelet/kubeconfig
+     - user: root
+     - group: root
+     - source: salt://master/kubernetes/cfg/kubeconfig
      - mode: 644
      - template: jinja
      - makedirs: True
-
-kubectl-config-vagrant:
+## Token file ##
+token.csv:
    file.managed:
-     - name: /home/vagrant/.kube/config
-     - user: vagrant
-     - group: vagrant
-     - source: salt://master/kubernetes/cfg/kubectl-config
+     - name: /var/lib/kubernetes/token.csv
+     - user: root
+     - group: root
+     - source: salt://master/kubernetes/cfg/token.csv
+     - mode: 644
+     - template: jinja
+     - makedirs: True
+## Authorization policy file ##
+authorization-policy.json:
+   file.managed:
+     - name: /var/lib/kubernetes/authorization-policy.json
+     - user: root
+     - group: root
+     - source: salt://master/kubernetes/cfg/authorization-policy.json
      - mode: 644
      - template: jinja
      - makedirs: True

@@ -1,0 +1,8 @@
+{% set master_ip = salt['grains.get']('master_ip') %}
+###
+# kubernetes proxy config
+
+# default config should be adequate
+
+# Add your own!
+KUBE_PROXY_ARGS="--bind-address={{ master_ip }} --cluster-cidr={{ pillar['kube_cluster_cidr'] }} --proxy-mode=iptables --hostname_override={{ master_ip }} --kubeconfig=/var/lib/kubelet/kubeconfig"

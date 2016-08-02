@@ -1,17 +1,29 @@
 #!/bin/bash
 
-echo "####### Updating kubernetes to version 1.1.8 #########"
-cd /tmp
-curl -L https://github.com/kubernetes/kubernetes/releases/download/v1.1.8/kubernetes.tar.gz -o kubernetes-1.1.8.tar.gz
-tar zxvf kubernetes-1.1.8.tar.gz
-cd kubernetes/server
-tar zxvf kubernetes-server-linux-amd64.tar.gz
-cd kubernetes/server/bin
-ls | egrep -v "tar|tag" | xargs -I {} cp {} /bin/
-cd /tmp/kubernetes/cluster
-cp -r addons /etc/
-cd /tmp
-rm -rf kubernetes
-rm -rf kubernetes-1.1.8.tar.gz
-echo "####### Updating kubernetes to 1.1.8 Done... #########"
+yum -y install openssl expect
 
+echo "####### Updating kubernetes #########"
+mkdir -p /opt/kubernetes && cd /opt/kubernetes
+
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-apiserver
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-controller-manager
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-scheduler
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubectl
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubectl
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-proxy
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubelet
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-dns
+
+chmod +x /opt/kubernetes/ -R
+
+mv -f /opt/kubernetes/kube* /usr/bin/
+cd /opt/ && rm -rf /opt/kubernetes
+echo "###### Updating kubernetes done ####"
+
+echo "### Installing easy-rsa Done ... ###"
+cd /opt/
+curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz
+tar xzf easy-rsa.tar.gz
+rm -rf /opt/easy-rsa.tar.gz
+
+echo "### Done Installing easy-rsa ####"

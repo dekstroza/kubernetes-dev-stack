@@ -6,13 +6,7 @@
 {% set master_ip = salt['grains.get']('master_ip') %}
 
 # The address on the local server to listen to.
-KUBE_API_ADDRESS="--address={{ master_ip }}"
-
-# The port on the local server to listen on.
-KUBE_API_PORT="--port=8080"
-
-# Port minions listen on
-KUBELET_PORT="--kubelet_port=10250"
+KUBE_API_ADDRESS="--insecure-bind-address={{ master_ip }} --advertise-address={{ master_ip }} --bind-address={{ master_ip }} --allow-privileged=true --client-ca-file=/var/run/kubernetes/ca.crt --tls-cert-file=/var/run/kubernetes/kubernetes-master.crt --tls-private-key-file=/var/run/kubernetes/kubernetes-master.key --kubelet-certificate-authority=/var/run/kubernetes/ca.crt --kubelet-client-certificate=/var/run/kubernetes/kubernetes-master.crt --kubelet-client-key=/var/run/kubernetes/kubernetes-master.key --service-account-key-file=/var/run/kubernetes/kubernetes-master.key --authorization-policy-file=/var/lib/kubernetes/authorization-policy.json --authorization-mode=ABAC --kubelet-https=true --token-auth-file=/var/lib/kubernetes/token.csv --cloud-config= --cloud-provider= --admission_control=AlwaysAdmit,NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota --cors_allowed_origins=.*"
 
 # Comma separated list of nodes in the etcd cluster
 KUBE_ETCD_SERVERS="--etcd_servers=http://127.0.0.1:2379"
@@ -20,9 +14,7 @@ KUBE_ETCD_SERVERS="--etcd_servers=http://127.0.0.1:2379"
 # Address range to use for services
 KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range={{ pillar['service_cluster_cidr'] }}"
 
-# default admission control policies
-#KUBE_ADMISSION_CONTROL="--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
 
 # Add your own!
-KUBE_API_ARGS="--token-auth-file=/dev/null --cors_allowed_origins=.* --allow-privileged=true "
+KUBE_API_ARGS=""
 

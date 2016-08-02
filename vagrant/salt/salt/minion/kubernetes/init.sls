@@ -16,6 +16,15 @@ kubelet-config:
      - mode: 644
      - template: jinja
 
+kube-proxy-config:
+   file.managed:
+     - name: /etc/kubernetes/proxy
+     - user: root
+     - group: root
+     - source: salt://minion/kubernetes/cfg/proxy
+     - mode: 644
+     - template: jinja
+
 kubectl-config:
    file.managed:
      - name: /root/.kube/config

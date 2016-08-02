@@ -20,5 +20,5 @@ KUBE_ALLOW_PRIV="--allow_privileged=true"
 
 # How the controller-manager, scheduler, and proxy find the apiserver
 {% set master_ip = salt['grains.get']('master_ip') %}
-KUBE_MASTER="--master=http://{{ master_ip }}:8080"
+KUBE_MASTER="--master=https://{{ master_ip }}:6443"
 

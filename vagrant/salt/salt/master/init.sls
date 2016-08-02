@@ -64,16 +64,22 @@ kube-apiserver-running:
     - name: kube-apiserver
     - watch:
       - file: /etc/kubernetes/apiserver
+      - file: /var/lib/kubelet/kubeconfig
+      - file: /var/lib/kubernetes/authorization-policy.json
     - require:
       - service: docker
       - file: /etc/kubernetes/apiserver
+      - file: /var/lib/kubelet/kubeconfig
+      - file: /var/lib/kubernetes/authorization-policy.json
       - cmd: correct-kube-dir-privs
+      - cmd: generate-certs
 
 kube-controller-manager-running:
   service.running:
     - name: kube-controller-manager
     - require:
       - file: /etc/kubernetes/controller-manager
+      - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
       - service: docker
 
@@ -81,6 +87,8 @@ kube-scheduler-running:
   service.running:
     - name: kube-scheduler
     - require:
+      - file: /etc/kubernetes/scheduler
+      - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
       - service: docker
 
@@ -90,19 +98,25 @@ kubelet:
     - watch:
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
+      - file: /var/lib/kubelet/kubeconfig
     - require:
       - service: docker
       - service: kube-apiserver
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
+      - file: /var/lib/kubelet/kubeconfig
 
 kube-proxy:
   service.running:
     - name: kube-proxy
     - watch:
       - file: /etc/kubernetes/config
-      - file: /etc/kubernetes/kubelet
+      - file: /etc/kubernetes/proxy
+      - file: /var/lib/kubelet/kubeconfig
     - require:
+      - file: /etc/kubernetes/config
+      - file: /etc/kubernetes/proxy
+      - file: /var/lib/kubelet/kubeconfig
       - service: kubelet
 
 create-routing-scripts:
@@ -113,189 +127,39 @@ create-routing-scripts:
     - require:
       - service: kube-proxy
 
+generate-certs:
+  cmd.script:
+    - source: salt://master/pre-start-scripts/generate-certs.sh
+    - user: root
+    - template: jinja
+
+kubectl-setup-root:
+  cmd.run:
+    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/run/kubernetes/ca.crt  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
+    - user: root
+    - template: jinja
+    - require:
+      - cmd: generate-certs
+
+kubectl-setup-vagrant:
+  cmd.run:
+    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/run/kubernetes/ca.crt  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
+    - user: vagrant
+    - template: jinja
+    - require:
+      - cmd: generate-certs
+
 run-kube-dns:
   cmd.run:
-    - name: kubectl -s {{ master_ip }}:8080 create -f /etc/kubernetes/dns/
+    - name: kube-dns --domain={{ pillar['dns_domain'] }} --kube-master-url=https://{{ master_ip }}:6443 --kubecfg-file=/var/lib/kubelet/kubeconfig > /dev/null 2>&1 &
     - require:
-      - service: kube-proxy
-      - file: /etc/kubernetes/dns/skydns-rc.yaml
-      - file: /etc/kubernetes/dns/skydns-svc.yaml
-    - unless: kubectl -s {{ master_ip }}:8080 get rc --namespace=kube-system | grep dns
+      - service: kube-apiserver
+      - file: /var/lib/kubelet/kubeconfig
+    - unless: pidof kube-dns
 
 
 correct-kube-dir-privs:
   cmd.run:
     - name: mkdir -p /var/run/kubernetes && chown kube:kube /var/run/kubernetes/ -R
     - unless: ls -ld /var/run/kubernetes | awk '{print $3}' | grep kube
-
-correct-kubectl-schema-privs:
-  cmd.run:
-    - name: chmod +rw /tmp/kubectl.schema/ -R
-    - require:
-      - service: kube-proxy
-
-dns-rc-setup:
-  file.managed:
-    - name: /etc/kubernetes/dns/skydns-rc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/dns/cfg/skydns-rc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-dns-svc-setup:
-  file.managed:
-    - name: /etc/kubernetes/dns/skydns-svc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/dns/cfg/skydns-svc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kubeui-rc-setup:
-  file.managed:
-    - name: /etc/kubernetes/kube-ui/kube-ui-rc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/kube-ui/cfg/kube-ui-rc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kubeui-svc-setup:
-  file.managed:
-    - name: /etc/kubernetes/kube-ui/kube-ui-svc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/kube-ui/cfg/kube-ui-svc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kube-grafana-servicesetup:
-  file.managed:
-    - name: /etc/kubernetes/grafana/grafana-service.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/grafana/cfg/grafana-service.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy 
-
-kube-grafana-heapster-controller:
-  file.managed:
-    - name: /etc/kubernetes/grafana/heapster-controller.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/grafana/cfg/heapster-controller.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kube-grafana-heapster-svc:
-  file.managed:
-    - name: /etc/kubernetes/grafana/heapster-service.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/grafana/cfg/heapster-service.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kube-grafana-influx-rc:
-  file.managed:
-    - name: /etc/kubernetes/grafana/influxdb-grafana-controller.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/grafana/cfg/influxdb-grafana-controller.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kube-grafana-influx-svc:
-  file.managed:
-    - name: /etc/kubernetes/grafana/influxdb-service.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/grafana/cfg/influxdb-service.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-registry-svc:
-  file.managed:
-    - name: /etc/kubernetes/registry/registry-svc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/registry/registry-svc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-registry-rc:
-  file.managed:
-    - name: /etc/kubernetes/registry/registry-rc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/registry/registry-rc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-registry-pv:
-  file.managed:
-    - name: /etc/kubernetes/registry/registry-pv.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/registry/registry-pv.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-registry-pvc:
-  file.managed:
-    - name: /etc/kubernetes/registry/registry-pvc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/registry/registry-pvc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-cluster-load-balancing-svc:
-  file.managed:
-    - name: /etc/kubernetes/cluster-loadbalancing/default-svc.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/cluster-loadbalancing/default-svc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-cluster-load-balancing-rc:
-  file.managed:
-    - name: /etc/kubernetes/cluster-loadbalancing/glbc-controller.yaml
-    - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/cluster-loadbalancing/glbc-controller.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
 
