@@ -9,7 +9,8 @@ virtualbox-iso|virtualbox-ovf)
 	cd /tmp
 	umount /tmp/isomount
 	rm -rf /tmp/isomount
-	yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers dkms make perl
+        rm -rf /opt/parallels-tools.tar.gz
+	yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers kernel-ml-tools-libs dkms perl selinux-policy-devel
 	yum -y clean all
 	;;
 
