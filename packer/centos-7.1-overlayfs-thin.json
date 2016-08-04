@@ -41,6 +41,7 @@
     "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
     "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
     "parallels_tools_flavor": "lin",
+    "parallels_tools_mode": "disable",
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
     "ssh_wait_timeout": "20000s",
@@ -61,6 +62,11 @@
       "name": "dekstroza/kube-overlay-xfs"
     },
 "provisioners": [
+    {
+  	"type": "file",
+  	"source": "parallels-tools.tar.gz",
+  	"destination": "/tmp/parallels-tools.tar.gz"
+    },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "scripts": [
@@ -85,7 +91,7 @@
         "metadata": {
           "provider": "parallels",
           "created_at": "{{timestamp}}",
-          "version": "1.4.2"
+          "version": "1.4.6"
         }
      },
      {
@@ -95,7 +101,7 @@
         "metadata": {
           "provider": "virtualbox",
           "created_at": "{{timestamp}}",
-	  "version": "1.4.2"
+	  "version": "1.4.6"
         }
      }
  ]]

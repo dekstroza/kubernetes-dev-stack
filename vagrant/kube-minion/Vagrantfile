@@ -23,8 +23,8 @@ Vagrant.configure(2) do |config|
   minion_vm_name = "minion-#{n+1}"
   config.ssh.insert_key = false
   config.vm.define minion_vm_name do |minion|
-    minion.vm.synced_folder "../salt/", "/srv/", type: "nfs"
-    minion.vm.synced_folder ".", "/vagrant", type: "nfs" 
+    minion.vm.synced_folder "../salt/", "/srv/"
+    minion.vm.synced_folder ".", "/vagrant"
     if ENV['NETWORK_TYPE'].to_s == "" then
       minion.vm.network "public_network"
     end

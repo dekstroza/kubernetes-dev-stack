@@ -1,7 +1,6 @@
 #!/bin/bash
 
 {% set master_ip = salt['grains.get']('master_ip') %}
-yum -y install expect
 
 expect -c "  
    set timeout 1
@@ -14,7 +13,6 @@ expect -c "
 "
 
   
-/var/lib/kubelet/kubeconfig
 
 expect -c "
    set timeout 1

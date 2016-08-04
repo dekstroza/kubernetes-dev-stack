@@ -1,18 +1,17 @@
 #!/bin/bash
 
-yum -y install openssl expect
 
 echo "####### Updating kubernetes #########"
 mkdir -p /opt/kubernetes && cd /opt/kubernetes
 
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-apiserver
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-controller-manager
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-scheduler
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubectl
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubectl
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-proxy
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kubelet
-curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.3/bin/linux/amd64/kube-dns
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kube-apiserver
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kube-controller-manager
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kube-scheduler
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kubectl
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kubectl
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kube-proxy
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kubelet
+curl -L -O https://storage.googleapis.com/kubernetes-release/release/v1.3.4/bin/linux/amd64/kube-dns
 
 chmod +x /opt/kubernetes/ -R
 
@@ -27,3 +26,4 @@ tar xzf easy-rsa.tar.gz
 rm -rf /opt/easy-rsa.tar.gz
 
 echo "### Done Installing easy-rsa ####"
+

@@ -2,7 +2,7 @@
 
 {% set master_ip = salt['grains.get']('master_ip') %}
 
-yum install -y openssl
+#yum install -y openssl
 
 cd /opt/easy-rsa-master/easyrsa3
 ./easyrsa init-pki
