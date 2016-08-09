@@ -10,10 +10,8 @@ Vagrant.require_version ">= 1.6.2"
 
 $vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
 Vagrant.configure(2) do |config|
-  config.ssh.insert_key = false
   config.vm.define "kube-master" do |master|
     master.vm.synced_folder "../salt/", "/srv/"
-    master.vm.synced_folder ".", "/vagrant"
     if ENV['NETWORK_TYPE'].to_s == "" then
       master.vm.network "public_network"
     end
@@ -24,14 +22,17 @@ Vagrant.configure(2) do |config|
       override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
+      v.gui = false
       v.customize ["modifyvm", :id, "--nictype1", "virtio"]
       v.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      v.customize ["modifyvm", :id, "--cableconnected1", "on"]
+      v.customize ["modifyvm", :id, "--cableconnected2", "on"]
       override.vm.provision :shell, :inline => (%q{
        ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1)
        echo -e "roles:\n  - kube-master" >> /etc/salt/grains
        echo -e master_ip: $ip >> /etc/salt/grains
        echo -e nfs_ip: $ip >> /etc/salt/grains
-       /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
+       #/usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
        salt-call state.highstate -l quiet
        echo "#################################################################################"
        echo "# Please create route to your cloud by running:                                 #"

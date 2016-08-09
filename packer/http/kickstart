@@ -41,6 +41,7 @@ openssl
 expect
 make
 perl
+patch
 dkms
 gcc 
 bzip2

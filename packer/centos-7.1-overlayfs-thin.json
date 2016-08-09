@@ -68,6 +68,11 @@
   	"destination": "/tmp/parallels-tools.tar.gz"
     },
     {
+        "type": "file",
+        "source": "vboxvideo.patch",
+        "destination": "/tmp/vboxvideo.patch"
+    },
+    {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "scripts": [
         "scripts/install-vbox-tools.sh",
@@ -101,7 +106,7 @@
         "metadata": {
           "provider": "virtualbox",
           "created_at": "{{timestamp}}",
-	  "version": "1.4.6"
+	  "version": "1.4.7"
         }
      }
  ]]
