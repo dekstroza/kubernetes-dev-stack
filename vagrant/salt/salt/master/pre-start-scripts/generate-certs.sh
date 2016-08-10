@@ -9,7 +9,7 @@ cd /opt/easy-rsa-master/easyrsa3
 
 
 ./easyrsa --batch "--req-cn={{ master_ip }}@`date +%s`" build-ca nopass
-./easyrsa --subject-alt-name="IP:{{ master_ip }}" build-server-full kubernetes-master nopass
+./easyrsa --subject-alt-name="IP:{{ master_ip }},IP:10.0.0.1,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.{{ pillar['dns_domain'] }}" build-server-full kubernetes-master nopass
 
 cp /opt/easy-rsa-master/easyrsa3/pki/ca.crt /var/run/kubernetes/
 cp /opt/easy-rsa-master/easyrsa3/pki/private/ca.key /var/run/kubernetes/

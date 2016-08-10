@@ -16,6 +16,6 @@ KUBELET_HOSTNAME="--hostname_override={{ master_ip }}"
 KUBELET_API_SERVER="--api-servers=https://{{ master_ip }}:6443"
 
 # Add your own!
-KUBELET_ARGS="--cluster-dns={{ master_ip }} --cluster-domain={{ pillar['dns_domain'] }}  --kubeconfig=/var/lib/kubelet/kubeconfig"
+KUBELET_ARGS="--cluster-dns={{ pillar['dns_server'] }} --cluster-domain={{ pillar['dns_domain'] }}  --kubeconfig=/var/lib/kubelet/kubeconfig"
 
 

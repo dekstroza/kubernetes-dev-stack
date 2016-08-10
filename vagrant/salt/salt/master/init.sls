@@ -45,7 +45,7 @@ flannel-running:
 
 configure-cluster-network:
   cmd.run:
-    - name: sleep 10 && etcdctl set /coreos.com/network/config < /etc/etcd/network.json
+    - name: sleep 5 && etcdctl set /coreos.com/network/config < /etc/etcd/network.json
     - require:
       - service: etcd
     - unless: etcdctl get /coreos.com/network/config
@@ -149,13 +149,13 @@ kubectl-setup-vagrant:
     - require:
       - cmd: generate-certs
 
-run-kube-dns:
-  cmd.run:
-    - name: kube-dns --domain={{ pillar['dns_domain'] }} --kube-master-url=https://{{ master_ip }}:6443 --kubecfg-file=/var/lib/kubelet/kubeconfig > /dev/null 2>&1 &
-    - require:
-      - service: kube-apiserver
-      - file: /var/lib/kubelet/kubeconfig
-    - unless: pidof kube-dns
+#run-kube-dns:
+#  cmd.run:
+#    - name: kube-dns --domain={{ pillar['dns_domain'] }} --kube-master-url=https://{{ master_ip }}:6443 --kubecfg-file=/var/lib/kubelet/kubeconfig > /dev/null 2>&1 &
+#    - require:
+#      - service: kube-apiserver
+#      - file: /var/lib/kubelet/kubeconfig
+#    - unless: pidof kube-dns
 
 
 correct-kube-dir-privs:
