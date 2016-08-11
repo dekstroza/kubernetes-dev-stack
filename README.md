@@ -8,16 +8,16 @@ Master and Minion(s) will be bridged by default to one of your host interfaces, 
 **This is little demo was created for the purpose of development, and should not be used in production, as kubernetes is configured without security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.4.5, xfs
-- Docker 1.8.2, overlay storage driver
-- Kubernetes 1.1.8 with cluster-addons
+- Centos 7.2 kernel 4.7.0, xfs
+- Docker 1.10.3, overlay storage driver
+- Kubernetes 1.3.4 with cluster-addons
 - Flanneld 0.5.5
-- Saltstack 2015.5.5-1
+- Saltstack 2015.5.10 (Lithium)
 
 
 ### Requirements
-1. VirtualBox, recent version, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
-2. Vagrant, recent version, you can get it from here: [Vagrant](http://www.vagrantup.com)
+1. VirtualBox 1.5.2 or greater, due to latest ml kernel, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
+2. Vagrant 1.8.5 or greater , you can get it from here: [Vagrant](http://www.vagrantup.com)
 3. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box, otherwise setting env     variable NETWORK_TYPE=private will do the trick, however your kube master/minions will not be accessible from outside. 
 
 ### Getting started
@@ -35,7 +35,7 @@ To start kubernetes master (which will also be used to schedule docker container
     ## Start the VM
     vagrant up --provider=virtualbox
 
-After initial download of vagrant box (once off download, 450Mb) from vagrant repository, box will be automatically configured, and depending on network setup on your machine, it might ask you which network interface you wish to use - normally choose one you use to connect to Internet (normally choice #1 is what you need), but can vary depending on the machine.
+After initial download of vagrant box (once off download) from vagrant repository, box will be automatically configured, and depending on network setup on your machine, it might ask you which network interface you wish to use - normally choose one you use to connect to Internet (normally choice #1 is what you need), but can vary depending on the machine.
 
 Since kubernetes operates on separate network, script to create route to your newly created kubernetes cloud will be generated in the same dir (for Windows, Linux and Mac), so run:
 
@@ -55,28 +55,32 @@ Kubernetes master should be up and running for you:
 
     ## Bellow will show you all kube memebers
     kubectl get nodes
+    
+    ## Bellow will show you state of cluster
+    kubectl get cs
 
     ## Bellow will show everything that currently runs
     ## in kube-system namespace (dns, ui, grafana etc..)
-    kubectl get po --namespace=kube-system
+    kubectl get po --all-namespaces
 
     ## Gives you cluster info, all cluster services running
     kubectl cluster-info
 
     ## You can start kube-ui or grafana as example:
-    sudo kubectl create -f /etc/kubernetes/kube-ui/
+    sudo kubectl create -f /etc/kubernetes/kubernetes-dashboard/
 
     ## Or Graphana:
     sudo kubectl create -f /etc/kubernetes/grafana/
 
     ## And monitor progress with:
-    watch -n 5 kubectl get po --namespace=kube-system
+    kubectl get po --all-namespaces --watch
 
     ## Once up and running cluster-info will tell you where to go:
 
     kubectl cluster-info
 
     ## and open up Grafana url shown in your browser.
+    ## NOTE: Due to unresolved issue, if accessing any of these urls, use http instead of https and port 8080 instead of 6443
 
 Also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local**
 
