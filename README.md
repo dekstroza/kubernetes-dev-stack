@@ -16,7 +16,7 @@ Master and Minion(s) will be bridged by default to one of your host interfaces, 
 
 
 ### Requirements
-1. VirtualBox 1.5.2 or greater, due to latest ml kernel, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
+1. VirtualBox 5.1.4 or greater, due to latest ml kernel, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
 2. Vagrant 1.8.5 or greater , you can get it from here: [Vagrant](http://www.vagrantup.com)
 3. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box, otherwise setting env     variable NETWORK_TYPE=private will do the trick, however your kube master/minions will not be accessible from outside. 
 
