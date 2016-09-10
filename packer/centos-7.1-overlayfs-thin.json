@@ -96,7 +96,7 @@
         "metadata": {
           "provider": "virtualbox",
           "created_at": "{{timestamp}}",
-	  "version": "1.4.8"
+	  "version": "1.4.9"
         }
      }
  ]]

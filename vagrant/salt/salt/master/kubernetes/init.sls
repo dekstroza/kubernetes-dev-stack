@@ -1,8 +1,74 @@
+include:
+   - master.kubernetes.users
+
+var-run-kubernetes-dir:
+   file.directory:
+     - name: /var/run/kubernetes
+     - user: kube
+     - group: kube
+     - makedirs: True 
+kube-apiserver-service:
+   file.managed:
+     - name: /usr/lib/systemd/system/kube-apiserver.service
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kube-apiserver.service
+     - mode: 644
+kube-controller-manager-service:
+   file.managed:
+     - name: /usr/lib/systemd/system/kube-controller-manager.service
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kube-controller-manager.service
+     - mode: 644
+kube-scheduler-service:
+   file.managed:
+     - name: /usr/lib/systemd/system/kube-scheduler.service
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kube-scheduler.service
+     - mode: 644
+kubernetes-conf:
+   file.managed:
+     - name: /usr/lib/tmpfiles.d/kubernetes.conf
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kubernetes.conf
+     - mode: 644
+kube-proxy-service:
+   file.managed:
+     - name: /usr/lib/systemd/system/kube-proxy.service
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kube-proxy.service
+     - mode: 644
+kubelet-service:
+   file.managed:
+     - name: /usr/lib/systemd/system/kubelet.service
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kubelet.service
+     - mode: 644
+kubernetes-accounting-conf:
+   file.managed:
+     - name: /etc/systemd/system.conf.d/kubernetes-accounting.conf
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/kubernetes/cfg/kubernetes-accounting.conf
+     - mode: 644
 kube-apiserver-config:
    file.managed:
      - name: /etc/kubernetes/apiserver
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/apiserver
      - mode: 644
      - template: jinja
@@ -12,6 +78,7 @@ kubernetes-config:
      - name: /etc/kubernetes/config
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/config
      - mode: 644
      - template: jinja
@@ -21,6 +88,7 @@ kube-controller-manager:
      - name: /etc/kubernetes/controller-manager
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/controller-manager
      - mode: 644
      - template: jinja
@@ -30,6 +98,7 @@ kube-scheduler:
      - name: /etc/kubernetes/scheduler
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/scheduler
      - mode: 644
      - template: jinja
@@ -39,6 +108,7 @@ kubelet-config:
      - name: /etc/kubernetes/kubelet
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/kubelet
      - mode: 644
      - template: jinja
@@ -48,6 +118,7 @@ kube-proxy-config:
      - name: /etc/kubernetes/proxy
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/proxy
      - mode: 644
      - template: jinja
@@ -58,6 +129,7 @@ kubeconfig:
      - name: /var/lib/kubelet/kubeconfig
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/kubeconfig
      - mode: 644
      - template: jinja
@@ -68,6 +140,7 @@ token.csv:
      - name: /var/lib/kubernetes/token.csv
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/token.csv
      - mode: 644
      - template: jinja
@@ -78,6 +151,7 @@ authorization-policy.json:
      - name: /var/lib/kubernetes/authorization-policy.json
      - user: root
      - group: root
+     - makedirs: True
      - source: salt://master/kubernetes/cfg/authorization-policy.json
      - mode: 644
      - template: jinja
@@ -91,6 +165,7 @@ dns-rc-setup:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/dns/cfg/skydns-rc.yaml
     - template: jinja
     - require:
@@ -102,6 +177,7 @@ dns-svc-setup:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/dns/cfg/skydns-svc.yaml
     - template: jinja
     - require:
@@ -113,6 +189,7 @@ kubernetes-dashboard:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/kubernetes-dashboard/cfg/kubernetes-dashboard.yaml
     - template: jinja
     - require:
@@ -124,6 +201,7 @@ kube-grafana-servicesetup:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/grafana-service.yaml
     - template: jinja
     - require:
@@ -135,6 +213,7 @@ kube-grafana-heapster-controller:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/heapster-controller.yaml
     - template: jinja
     - require:
@@ -146,6 +225,7 @@ kube-grafana-heapster-svc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/heapster-service.yaml
     - template: jinja
     - require:
@@ -157,6 +237,7 @@ kube-grafana-influx-rc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/influxdb-grafana-controller.yaml
     - template: jinja
     - require:
@@ -168,6 +249,7 @@ kube-grafana-influx-svc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/influxdb-service.yaml
     - template: jinja
     - require:
@@ -179,6 +261,7 @@ registry-svc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/registry/registry-svc.yaml
     - template: jinja
     - require:
@@ -190,6 +273,7 @@ registry-rc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/registry/registry-rc.yaml
     - template: jinja
     - require:
@@ -201,6 +285,7 @@ registry-pv:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/registry/registry-pv.yaml
     - template: jinja
     - require:
@@ -212,6 +297,7 @@ registry-pvc:
     - makedirs: True
     - user: root
     - group: root
+    - makedirs: True
     - source: salt://master/kubernetes/cluster-addons/registry/registry-pvc.yaml
     - template: jinja
     - require:

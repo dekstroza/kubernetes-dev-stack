@@ -55,8 +55,9 @@ docker-running:
   service.running:
     - name: docker
     - require:
-      - file: docker-config
+      - file: docker-systemd-config-storage
       - file: docker-network-config
+      - file: docker-systemd-config
       - service: flanneld
 
 kube-apiserver-running:
@@ -71,7 +72,6 @@ kube-apiserver-running:
       - file: /etc/kubernetes/apiserver
       - file: /var/lib/kubelet/kubeconfig
       - file: /var/lib/kubernetes/authorization-policy.json
-      - cmd: correct-kube-dir-privs
       - cmd: generate-certs
 
 kube-controller-manager-running:
@@ -148,18 +148,4 @@ kubectl-setup-vagrant:
     - template: jinja
     - require:
       - cmd: generate-certs
-
-#run-kube-dns:
-#  cmd.run:
-#    - name: kube-dns --domain={{ pillar['dns_domain'] }} --kube-master-url=https://{{ master_ip }}:6443 --kubecfg-file=/var/lib/kubelet/kubeconfig > /dev/null 2>&1 &
-#    - require:
-#      - service: kube-apiserver
-#      - file: /var/lib/kubelet/kubeconfig
-#    - unless: pidof kube-dns
-
-
-correct-kube-dir-privs:
-  cmd.run:
-    - name: mkdir -p /var/run/kubernetes && chown kube:kube /var/run/kubernetes/ -R
-    - unless: ls -ld /var/run/kubernetes | awk '{print $3}' | grep kube
 
