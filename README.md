@@ -1,7 +1,7 @@
 # Kubernetes Dev-Stack
 
 ## Background
-Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.0, docker 1.10.3 using overlay storage driver, backed by xfs file system, kubernetes is at the latest version 1.3.4. SELinux will be set to permissive mode, and firewall will be down.
+Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1 using overlay storage driver, backed by xfs file system, kubernetes is at the latest version 1.3.6. SELinux will be set to permissive mode, and firewall will be down.
 Master and Minion(s) will be bridged by default to one of your host interfaces, so assumption is there is DHCP somwhere on your network which will give your VM ip address. In case you don't have DHCP on the network to assign IP to the VM's bridged interface you can still use it in private netork mode, by exporting NETWORK_TYPE=private before starting up VM's with Vagrant. In this setup, your kuberenetes node will not be reachable from outside network - which if you really need can set up using NAT, but that is beyond the scope of this little pet project.
 
 
