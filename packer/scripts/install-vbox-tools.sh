@@ -11,19 +11,20 @@ case "$PACKER_BUILDER_TYPE" in
 		rm -rf /tmp/isomount
 		rm -rf /home/vagrant/VBoxGuestAdditions.iso
 		yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers kernel-ml-tools-libs dkms perl selinux-policy-devel
+		yum -y install openssl
 		yum -y clean all
 		;;
 
 	parallels-iso|parallels-pvm)
-		mv /tmp/parallels-tools.tar.gz /opt/
-		cd /opt/
-		tar zxvf parallels-tools.tar.gz
-		cd parallels-tools
-		./install --install-unattended
-		yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers kernel-ml-tools-libs dkms selinux-policy-devel perl
+		mkdir /tmp/parallels
+		mount -o loop /home/vagrant/prl-tools-lin.iso /tmp/parallels
+		/tmp/parallels/install --install-unattended-with-deps
+		umount /tmp/parallels
+		rmdir /tmp/parallels
+		rm -rf /home/vagrant/*.iso
+		yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers dkms make perl selinux-policy-devel
+		yum -y install openssl
 		yum -y clean all
-		cd /opt/
-		rm -rf parallels-tools/
 		;;
 
 	*)

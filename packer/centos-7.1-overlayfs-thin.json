@@ -41,7 +41,6 @@
     "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
     "iso_url": "http://mirror.strencom.net/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
     "parallels_tools_flavor": "lin",
-    "parallels_tools_mode": "disable",
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
     "ssh_wait_timeout": "20000s",
@@ -86,7 +85,7 @@
         "metadata": {
           "provider": "parallels",
           "created_at": "{{timestamp}}",
-          "version": "1.4.6"
+          "version": "1.4.8"
         }
      },
      {
