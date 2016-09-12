@@ -32,8 +32,9 @@ docker-running:
   service.running:
     - name: docker
     - require:
-      - file: docker-config
+      - file: docker-systemd-config-storage
       - file: docker-network-config
+      - file: docker-systemd-config
       - service: flanneld
 
 kubelet-running:
