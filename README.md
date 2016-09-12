@@ -8,9 +8,9 @@ Master and Minion(s) will be bridged by default to one of your host interfaces, 
 **This is little demo was created for the purpose of development, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.0, xfs
-- Docker 1.10.3, overlay storage driver
-- Kubernetes 1.3.4 with cluster-addons
+- Centos 7.2 kernel 4.7.3, xfs
+- Docker 1.12.1, overlay storage driver
+- Kubernetes 1.3.6 with cluster-addons
 - Flanneld 0.5.5
 - Saltstack 2015.5.10 (Lithium)
 
