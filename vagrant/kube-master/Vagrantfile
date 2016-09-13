@@ -56,6 +56,7 @@ Vagrant.configure(2) do |config|
       v.customize ['set', :id, '--shf-guest', 'off']
       v.customize ['set', :id, '--shf-guest-automount', 'off']
       v.customize ['set', :id, '--shf-host', 'on']
+      v.customize ['set', :id, '--device-add', 'hdd']
       # Remove all auto-mounted "shared folders"; the result seems to
       # persist between runs (i.e., vagrant halt && vagrant up)
       override.vm.provision :shell, :inline => (%q{

@@ -15,7 +15,7 @@ part /boot --fstype=xfs --size=512
 part pv.01 --grow --size=1
 volgroup vg_vagrantcentos --pesize=4096 pv.01
 logvol swap --name=lv_swap --vgname=vg_vagrantcentos --size=1024
-logvol / --fstype=xfs --name=lv_root --vgname=vg_vagrantcentos --grow --size=1
+logvol / --fstype=xfs --name=lv_root --vgname=vg_vagrantcentos --grow --size=5000 --maxsize=6000
 bootloader --location=mbr --append="crashkernel=auto rhgb quiet"
 user --name=vagrant --groups=wheel --password=vagrant
 reboot
