@@ -28,3 +28,9 @@ docker-systemd-config-storage:
      - makedirs: True
      - source: salt://master/docker/cfg/docker-storage.conf
      - mode: 644
+docker-config-storage-driver:
+    cmd.run:
+    - name: rm -rf /var/lib/docker && modprobe zfs && zpool create -f zpool-docker /dev/sdb && zfs create -o mountpoint=/var/lib/docker zpool-docker/docker
+    - unless: zfs list -t all | grep docker
+
+ 

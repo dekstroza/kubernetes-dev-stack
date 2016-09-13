@@ -10,8 +10,6 @@ case "$PACKER_BUILDER_TYPE" in
 		umount /tmp/isomount
 		rm -rf /tmp/isomount
 		rm -rf /home/vagrant/VBoxGuestAdditions.iso
-		yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers kernel-ml-tools-libs dkms perl selinux-policy-devel
-		yum -y install openssl
 		yum -y clean all
 		;;
 
@@ -22,8 +20,6 @@ case "$PACKER_BUILDER_TYPE" in
 		umount /tmp/parallels
 		rmdir /tmp/parallels
 		rm -rf /home/vagrant/*.iso
-		yum remove -y gcc bzip2 kernel-ml-devel kernel-ml-headers dkms make perl selinux-policy-devel
-		yum -y install openssl
 		yum -y clean all
 		;;
 

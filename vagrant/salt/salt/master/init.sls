@@ -59,6 +59,7 @@ docker-running:
       - file: docker-network-config
       - file: docker-systemd-config
       - service: flanneld
+      - cmd: docker-config-storage-driver
 
 kube-apiserver-running:
   service.running:

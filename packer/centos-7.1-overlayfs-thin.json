@@ -64,7 +64,8 @@
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "scripts": [
-        "scripts/install-vbox-tools.sh",
+        "scripts/install-zfs.sh",
+	"scripts/install-vbox-tools.sh",
         "scripts/docker-cfg.sh",
         "scripts/update-kubernetes.sh",
         "scripts/update-flannel.sh",
