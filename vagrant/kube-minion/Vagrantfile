@@ -37,7 +37,7 @@ Vagrant.configure(2) do |config|
       s.args = $master_ip
     end
     minion.vm.provider :virtualbox do |v, override|
-      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
+      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-zfs").to_s
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
       v.customize ["modifyvm", :id, "--nictype1", "virtio"]
@@ -64,7 +64,7 @@ Vagrant.configure(2) do |config|
     end
     
     minion.vm.provider :parallels do |v, override|
-      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
+      override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-zfs").to_s
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
       # Don't attempt to update the Parallels tools on the image (this can
