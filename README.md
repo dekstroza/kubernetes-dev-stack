@@ -1,15 +1,18 @@
 # Kubernetes Dev-Stack
 
 ## Background
-Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1 using overlay storage driver, backed by xfs file system, kubernetes is at the latest version 1.3.6. SELinux will be set to permissive mode, and firewall will be down.
+Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac. 
+
+Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1 using ZFS storage driver, root file system is xfs, kubernetes is at the latest version 1.3.6. SELinux will be set to permissive mode, and firewall will be down.
+
 Master and Minion(s) will be bridged by default to one of your host interfaces, so assumption is there is DHCP somwhere on your network which will give your VM ip address. In case you don't have DHCP on the network to assign IP to the VM's bridged interface you can still use it in private netork mode, by exporting NETWORK_TYPE=private before starting up VM's with Vagrant. In this setup, your kuberenetes node will not be reachable from outside network - which if you really need can set up using NAT, but that is beyond the scope of this little pet project.
 
 
 **This is little demo was created for the purpose of development, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.3, xfs
-- Docker 1.12.1, overlay storage driver
+- Centos 7.2 kernel 4.7.3, xfs, zfs
+- Docker 1.12.1, ZFS storage driver
 - Kubernetes 1.3.6 with cluster-addons
 - Flanneld 0.5.5
 - Saltstack 2015.5.10 (Lithium)
@@ -65,6 +68,9 @@ Kubernetes master should be up and running for you:
 
     ## Gives you cluster info, all cluster services running
     kubectl cluster-info
+    
+    ## You can start dns service with:
+    kubectl create -f /etc/kubernetes/dns/
 
     ## You can start kube-ui or grafana as example:
     sudo kubectl create -f /etc/kubernetes/kubernetes-dashboard/
@@ -82,7 +88,7 @@ Kubernetes master should be up and running for you:
     ## and open up Grafana url shown in your browser.
     ## NOTE: Due to unresolved issue, if accessing any of these urls, use http instead of https and port 8080 instead of 6443
 
-Also there will be dns up and running - depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local**
+ Depending how fast your network is, it might take a few for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local**
 
 To verify dns is up and running, inside master or minions, run:
 
