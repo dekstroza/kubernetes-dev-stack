@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 # Require a recent version of vagrant otherwise some have reported errors setting host names on boxes
 Vagrant.require_version ">= 1.6.2"
-file_to_disk = './tmp/large_disk.vdi'
+file_to_disk = '.tmp/large_disk.vdi'
 
 $vm_mem_size = (ENV['MEM_SIZE'] || "4096").to_i
 Vagrant.configure(2) do |config|
@@ -28,7 +28,8 @@ Vagrant.configure(2) do |config|
       v.customize ["modifyvm", :id, "--cableconnected1", "on"]
       v.customize ["modifyvm", :id, "--cableconnected2", "on"]
       v.customize ['createhd', '--filename', file_to_disk, '--size', 500 * 1024]
-      v.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
+      v.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata", "--hostiocache", "on"]
+      v.customize ["storageattach", :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
       override.vm.provision :shell, :inline => (%q{
        ip=$(ip -f inet -o addr show eth1|cut -d\  -f 7 | cut -d/ -f 1)
        echo -e "roles:\n  - kube-master" >> /etc/salt/grains
