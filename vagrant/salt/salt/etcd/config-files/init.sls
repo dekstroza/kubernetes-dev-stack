@@ -4,7 +4,7 @@ etcd-config:
      - name: /etc/etcd/etcd.conf
      - user: root
      - group: root
-     - source: salt://master/etcd/cfg/etcd.conf
+     - source: salt://etcd/config-files/cfg/etcd.conf
      - mode: 644
      - template: jinja
 
@@ -13,6 +13,6 @@ etcd-network-config:
      - name: /etc/etcd/network.json
      - user: root
      - group: root
-     - source: salt://master/etcd/cfg/network.json
+     - source: salt://etcd/config-files/cfg/network.json
      - mode: 644
      - template: jinja
