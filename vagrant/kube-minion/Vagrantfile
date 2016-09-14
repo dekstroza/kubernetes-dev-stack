@@ -6,7 +6,6 @@ VAGRANTFILE_API_VERSION = "2"
 
 # Require a recent version of vagrant otherwise some have reported errors setting host names on boxes
 Vagrant.require_version ">= 1.6.2"
-file_to_disk = '.tmp/large_disk.vdi'
 
 
 if ENV['MASTER_IP'].to_s == ""
@@ -39,15 +38,18 @@ Vagrant.configure(2) do |config|
     end
     minion.vm.provider :virtualbox do |v, override|
       override.vm.box = (ENV['BOX_NAME'] || "dekstroza/kube-overlay-xfs").to_s
+      override.vbguest.auto_update = false
       v.memory = $vm_mem_size
       v.cpus = $vm_cpus
+      disk_file_name = '.tmp/'+ minion_vm_name +'/disk2.vdi'
+
       v.customize ["modifyvm", :id, "--nictype1", "virtio"]
       v.customize ["modifyvm", :id, "--nictype2", "virtio"]
       v.customize ["modifyvm", :id, "--cableconnected1", "on"]
       v.customize ["modifyvm", :id, "--cableconnected2", "on"]
-      v.customize ['createhd', '--filename', file_to_disk, '--size', 500 * 1024]
+      v.customize ['createhd', '--filename', disk_file_name, '--size', 500 * 1024]
       v.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata", "--hostiocache", "on"]
-      v.customize ["storageattach", :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
+      v.customize ["storageattach", :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_file_name]
       override.vm.provision :shell, :inline => (%q{
        echo -e "roles:\n  - kube-minion" >> /etc/salt/grains
        /usr/sbin/ifconfig eth0 down && /usr/bin/sleep 2 && /usr/sbin/ifconfig eth0 up
