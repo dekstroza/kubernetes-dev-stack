@@ -1,6 +1,4 @@
 include:
-   - minion.flannel
-   - minion.docker
    - minion.kubernetes
 
 {% set nfs_ip = salt['grains.get']('nfs_ip') %}
@@ -19,24 +17,6 @@ firewalld:
   service.dead:
     - name: firewalld
     - enable: false
-
-flannel-running:
-  service.running:
-    - name: flanneld
-    - watch:
-      - file: /etc/sysconfig/flanneld
-    - require:
-      - file: /etc/sysconfig/flanneld
-
-docker-running:
-  service.running:
-    - name: docker
-    - require:
-      - file: docker-systemd-config-storage
-      - file: docker-network-config
-      - file: docker-systemd-config
-      - service: flanneld
-      - cmd: docker-config-storage-driver
 
 kubelet-running:
   service.running:

@@ -3,14 +3,14 @@ docker-network-config:
     - name: /etc/sysconfig/docker-network
     - user: root
     - group: root
-    - source: salt://minion/docker/cfg/docker-network.cfg
+    - source: salt://docker/config-files/cfg/docker-network.cfg
     - mode: 644
 docker-storage-config:
   file.managed:
     - name: /etc/sysconfig/docker-storage
     - user: root
     - group: root
-    - source: salt://minion/docker/cfg/docker-storage.cfg
+    - source: salt://docker/config-files/cfg/docker-storage.cfg
     - mode: 644
 docker-systemd-config:
    file.managed:
@@ -18,7 +18,7 @@ docker-systemd-config:
      - user: root
      - group: root
      - makedirs: True
-     - source: salt://minion/docker/cfg/docker.service
+     - source: salt://docker/config-files/cfg/docker.service
      - mode: 644
 docker-systemd-config-storage:
    file.managed:
@@ -26,9 +26,11 @@ docker-systemd-config-storage:
      - user: root
      - group: root
      - makedirs: True
-     - source: salt://minion/docker/cfg/docker-storage.conf
+     - source: salt://docker/config-files/cfg/docker-storage.conf
      - mode: 644
 docker-config-storage-driver:
     cmd.run:
     - name: rm -rf /var/lib/docker && modprobe zfs && zpool create -f zpool-docker /dev/sdb && zfs create -o mountpoint=/var/lib/docker zpool-docker/docker
     - unless: zfs list -t all | grep docker
+
+ 

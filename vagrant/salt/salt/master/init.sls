@@ -1,7 +1,4 @@
 include:
-   - master.etcd
-   - master.flannel
-   - master.docker
    - master.kubernetes
 
 
@@ -18,48 +15,10 @@ dekstroza-nfs-server:
       - nfs
       - nfs.{{ pillar['dns_domain'] }}
 
-
 firewalld:
   service.dead:
     - name: firewalld
     - enable: false
-
-etcd-running:
-  service.running:
-    - name: etcd
-    - watch:
-      - file: /etc/etcd/etcd.conf
-    - require:
-      - file: /etc/etcd/etcd.conf
-      - file: /etc/etcd/network.json
-
-flannel-running:
-  service.running:
-    - name: flanneld
-    - watch:
-      - file: /etc/sysconfig/flanneld
-    - require:
-      - service: etcd
-      - file: /etc/sysconfig/flanneld
-      - cmd: configure-cluster-network
-
-configure-cluster-network:
-  cmd.run:
-    - name: sleep 5 && etcdctl set /coreos.com/network/config < /etc/etcd/network.json
-    - require:
-      - service: etcd
-    - unless: etcdctl get /coreos.com/network/config
-
-
-docker-running:
-  service.running:
-    - name: docker
-    - require:
-      - file: docker-systemd-config-storage
-      - file: docker-network-config
-      - file: docker-systemd-config
-      - service: flanneld
-      - cmd: docker-config-storage-driver
 
 kube-apiserver-running:
   service.running:
