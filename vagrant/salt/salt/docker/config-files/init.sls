@@ -31,5 +31,5 @@ docker-systemd-config-storage:
 
 docker-config-storage-driver:
   cmd.run:
-    - name: mkfs.xfs /dev/sdb && mkdir -p /var/lib/docker && mount /dev/sdb /var/lib/docker && systemctl daemon-reload
-    - unless: df -T | grep /dev/sdb | grep xfs     
+    - name: (echo n; echo p; echo 1; echo ; echo ; echo w) | fdisk /dev/sdb && mkfs.ext4 -F /dev/sdb1 && mkdir -p /var/lib/docker && mount /dev/sdb1 /var/lib/docker && systemctl daemon-reload
+    - unless: df -T | grep /dev/sdb1 | grep ext4     
