@@ -7,6 +7,8 @@ Master branch has docker running with overlay2 storage driver. You can also chec
 
 Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1 using overlay2 storage driver, backed by xfs file system, kubernetes is at the latest version 1.3.6. SELinux will be set to permissive mode, and firewall will be down.
 
+*There are known bugs when using overlay2 with xfs (directories with ????? instead of permissions etc...), so be aware - or alternatively use overlay2 with ext4 (clone that branch) which seems to be far more stable.*
+
 Master and Minion(s) will be bridged by default to one of your host interfaces, so assumption is there is DHCP somwhere on your network which will give your VM ip address. In case you don't have DHCP on the network to assign IP to the VM's bridged interface you can still use it in private netork mode, by exporting NETWORK_TYPE=private before starting up VM's with Vagrant. In this setup, your kuberenetes node will not be reachable from outside network - which if you really need can set up using NAT, but that is beyond the scope of this little pet project.
 
 
@@ -21,7 +23,7 @@ Master and Minion(s) will be bridged by default to one of your host interfaces, 
 
 
 ### Requirements
-1. VirtualBox 5.1.4 or greater, due to latest ml kernel, you can get it here: [Oracle Virtual box](http://www.vagrantup.com)
+1. [VirtualBox 5.1.4 or greater](http://www.vagrantup.com) or [Parallels 11+] (http://www.parallels.com)
 2. Vagrant 1.8.5 or greater , you can get it from here: [Vagrant](http://www.vagrantup.com)
 3. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box, otherwise setting env     variable NETWORK_TYPE=private will do the trick, however your kube master/minions will not be accessible from outside. 
 
@@ -37,14 +39,14 @@ To start kubernetes master (which will also be used to schedule docker container
     ## to use less or more, export env variable MEM_SIZE,
     ## example: export MEM_SIZE=8096 for 8Gig VM
 
-    ## Start the VM
+    ## Start the VM (or --provider=parallels)
     vagrant up --provider=virtualbox
 
 After initial download of vagrant box (once off download) from vagrant repository, box will be automatically configured, and depending on network setup on your machine, it might ask you which network interface you wish to use - normally choose one you use to connect to Internet (normally choice #1 is what you need), but can vary depending on the machine.
 
 Since kubernetes operates on separate network, script to create route to your newly created kubernetes cloud will be generated in the same dir (for Windows, Linux and Mac), so run:
 
-    ## Depending on your os, for example Linux:
+    ## Depending on your operating system, for example Linux:
 
     ./add-route-LIN.sh
 
@@ -71,14 +73,14 @@ Kubernetes master should be up and running for you:
     ## Gives you cluster info, all cluster services running
     kubectl cluster-info
     
-    ## You can start dns server with
+    ## You can start dns server with (continue reading to see how to change/specify your own dns domain instead of default)
     kubectl create -f /etc/kubernetes/dns/
 
     ## You can start kube-ui or grafana as example:
-    sudo kubectl create -f /etc/kubernetes/kubernetes-dashboard/
+    kubectl create -f /etc/kubernetes/kubernetes-dashboard/
 
     ## Or Graphana:
-    sudo kubectl create -f /etc/kubernetes/grafana/
+    kubectl create -f /etc/kubernetes/grafana/
 
     ## And monitor progress with:
     kubectl get po --all-namespaces --watch
@@ -88,9 +90,9 @@ Kubernetes master should be up and running for you:
     kubectl cluster-info
 
     ## and open up Grafana url shown in your browser.
-    ## NOTE: Due to unresolved issue, if accessing any of these urls, use http instead of https and port 8080 instead of 6443
+    ## NOTE: Due to unresolved issue, if accessing any of these urls, use http instead of https and port 8080 instead of 6443, same links cluster-info command shows just http and port 8080 - this will be resolved shortly.
 
-Upon starting dns - depending how fast your network is, it might take a up to a minute or two for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local**
+Upon starting dns - depending how fast your network is, it might take a up to a minute or two for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local** (read on to see how to change domain).
 
 To verify dns is up and running, inside master or minions, run:
 
@@ -119,7 +121,7 @@ Important bits are:
 
 *Note cluster_registry_disk_size is not used and has not been tested*
 
-#### Starting kube minion(s)
+#### Starting kube minion(s) (same machine or somewhere else, as long you have network connectivity between them)
 
 Change directory to kube-minion:
 
@@ -130,7 +132,7 @@ Change directory to kube-minion:
 
     ## Set MEM_SIZE env if you wish more or less then 4Gig for minion(s) ##
     ## Set NUM_MINIONS=n env, where n is number of minions you wish to start ##
-    ## Start the VM ##
+    ## Start the VM (or --provider=parallels) ##
     vagrant up --provider=virtualbox
 
 Vagrant will start up your minions and salt-stack will configure them correctly. Again, depending on your network setup, you might be asked to select network interface over which minions will communicate (normally one you use to access Internet, normally choice #1).
