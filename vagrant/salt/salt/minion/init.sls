@@ -24,6 +24,7 @@ kubelet-running:
     - watch:
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
+      - service: docker
     - require:
       - service: docker
       - file: /etc/kubernetes/config
@@ -34,10 +35,12 @@ kube-proxy-running:
   service.running:
     - name: kube-proxy
     - watch:
+      - service: docker
       - file: /etc/kubernetes/proxy
     - require:
       - file: /etc/kubernetes/proxy
       - service: kubelet
+      - service: docker
       - cmd: setup-ca-from-master
 
 setup-ca-from-master:

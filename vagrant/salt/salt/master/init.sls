@@ -28,6 +28,7 @@ kube-apiserver-running:
       - file: /etc/kubernetes/apiserver
       - file: /var/lib/kubelet/kubeconfig
       - file: /var/lib/kubernetes/authorization-policy.json
+      - service: docker
     - require:
       - service: docker
       - file: /etc/kubernetes/apiserver
@@ -38,7 +39,10 @@ kube-apiserver-running:
 kube-controller-manager-running:
   service.running:
     - name: kube-controller-manager
+    - watch:
+      - service: docker
     - require:
+      - service: docker
       - file: /etc/kubernetes/controller-manager
       - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
@@ -47,7 +51,10 @@ kube-controller-manager-running:
 kube-scheduler-running:
   service.running:
     - name: kube-scheduler
+    - watch:
+      - service: docker
     - require:
+      - service: docker
       - file: /etc/kubernetes/scheduler
       - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
@@ -57,6 +64,7 @@ kubelet:
   service.running:
     - name: kubelet
     - watch:
+      - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
       - file: /var/lib/kubelet/kubeconfig
@@ -71,6 +79,7 @@ kube-proxy:
   service.running:
     - name: kube-proxy
     - watch:
+      - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
@@ -78,6 +87,7 @@ kube-proxy:
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
+      - service: docker
       - service: kubelet
 
 create-routing-scripts:
