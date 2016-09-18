@@ -29,9 +29,10 @@ Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has l
 
 
 ### Requirements
-1. [VirtualBox 5.1.4 or greater](http://www.vagrantup.com) or [Parallels 11+] (http://www.parallels.com)
+1. [VirtualBox 5.1.4 or greater](http://www.vagrantup.com) or [Parallels 12] (http://www.parallels.com)
 2. [Vagrant 1.8.5 or greater](http://www.vagrantup.com)
-3. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box(s), otherwise you can  export NETWORK_TYPE=private before starting master and minions, and they will get private addresses, and will not be accessible from outside (also they have to be on the same machine, setting access and having them on separate machines is also possible with some NAT magic, but that is beyond the scope of this little project).
+3. VT-x/AMD-v virtualization must be enabled in BIOS, as virtual machines run 64bit guests
+4. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box(s), otherwise you can  export NETWORK_TYPE=private before starting master and minions, and they will get private addresses, and will not be accessible from outside (also they have to be on the same machine, setting access and having them on separate machines is also possible with some NAT magic, but that is beyond the scope of this little project).
 
 ### Getting started
 In order to get started, first we need to start kube master, after which we can start multiple minions anywhere on the network as long as they can reach master.
