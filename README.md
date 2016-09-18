@@ -3,32 +3,36 @@
 ## Background
 Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac.
 
-Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. Master branch has docker running with overlay2 storage driver backed by xfs. 
+Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.4, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
 
+#### overlay2 with xfs or ext4
+
+Master branch has docker running with overlay2 storage driver backed by xfs.
 *There are known bugs when using overlay2 with xfs (directories with ????? instead of permissions etc...), so be aware - or alternatively use overlay2 with ext4 (clone overlay2-ext4) which seems to be far more stable.*
 
-You can also checkout *zfs-filesystem* branch, which has docker running with zfs storage driver. In case of zfs, kernel driver is using dkms, so do not update kernel, as it will require zfs kernel module rebuild - you have been warned !
+#### zfs storage driver
+
+You can also checkout **zfs-filesystem** branch, which has docker running with zfs storage driver. In case of zfs, kernel driver is using dkms, so do not update kernel, as it will require zfs kernel module rebuild - you have been warned !
+
+#### lvm block device 
 
 Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has lvm storage driver backed by blockdevice (keeping in mind this is just a virtual machine and blockdevice is virtual sata device added to the vm)
 
-
-Master and Minion(s) will be bridged by default to one of your host interfaces, so assumption is there is DHCP somwhere on your network which will give your VM ip address. In case you don't have DHCP on the network to assign IP to the VM's bridged interface you can still use it in private netork mode, by exporting NETWORK_TYPE=private before starting up VM's with Vagrant. In this setup, your kuberenetes node will not be reachable from outside network - which if you really need can set up using NAT, but that is beyond the scope of this little pet project.
-
-
-**This is little demo was created for the purpose of development, and should not be used in production, as kubernetes is configured with minimal security.**
+**This little demo was created as development environment, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.3, xfs
+- Centos 7.2 kernel 4.7.4, xfs, ext4, lvm or zfs
 - Docker 1.12.1, overlay storage driver
-- Kubernetes 1.3.6 with cluster-addons
+- Kubernetes 1.3.7 with cluster-addons
 - Flanneld 0.5.5
 - Saltstack 2015.5.10 (Lithium)
 
 
 ### Requirements
-1. [VirtualBox 5.1.4 or greater](http://www.vagrantup.com) or [Parallels 11+] (http://www.parallels.com)
+1. [VirtualBox 5.1.4 or greater](http://www.vagrantup.com) or [Parallels 12] (http://www.parallels.com)
 2. [Vagrant 1.8.5 or greater](http://www.vagrantup.com)
-3. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box(s), otherwise you can  export NETWORK_TYPE=private before starting master and minions, and they will get private addresses, and will not be accessible from outside (also they have to be on the same machine, setting access and having them on separate machines is also possible with some NAT magic, but that is beyond the scope of this little project).
+3. VT-x/AMD-v virtualization must be enabled in BIOS, as virtual machines run 64bit guests
+4. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box(s), otherwise you can  export NETWORK_TYPE=private before starting master and minions, and they will get private addresses, and will not be accessible from outside (also they have to be on the same machine, setting access and having them on separate machines is also possible with some NAT magic, but that is beyond the scope of this little project).
 
 ### Getting started
 In order to get started, first we need to start kube master, after which we can start multiple minions anywhere on the network as long as they can reach master.
