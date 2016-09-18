@@ -3,7 +3,7 @@
 ## Background
 Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac.
 
-Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
+Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.4, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
 
 #### overlay2 with xfs or ext4
 
@@ -21,9 +21,9 @@ Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has l
 **This little demo was created as development environment, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.3, xfs, ext4, lvm or zfs
+- Centos 7.2 kernel 4.7.4, xfs, ext4, lvm or zfs
 - Docker 1.12.1, overlay storage driver
-- Kubernetes 1.3.6 with cluster-addons
+- Kubernetes 1.3.7 with cluster-addons
 - Flanneld 0.5.5
 - Saltstack 2015.5.10 (Lithium)
 
