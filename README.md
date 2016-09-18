@@ -3,8 +3,11 @@
 ## Background
 Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac.
 
-Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. Master branch has docker running with overlay2 storage driver backed by xfs, but lvm, ext4 and zfs are supported as well.
+Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.3, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
 
+#### overlay2 with xfs or ext4
+
+Master branch has docker running with overlay2 storage driver backed by xfs.
 *There are known bugs when using overlay2 with xfs (directories with ????? instead of permissions etc...), so be aware - or alternatively use overlay2 with ext4 (clone overlay2-ext4) which seems to be far more stable.*
 
 #### zfs storage driver
