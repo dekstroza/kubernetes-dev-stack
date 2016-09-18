@@ -3,3 +3,5 @@
 packer_cache/
 **/*.box
 enm/
+.DS_Store
+
