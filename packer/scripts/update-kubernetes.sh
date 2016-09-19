@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KUBERNETES_VERSION="1.3.6"
+KUBERNETES_VERSION="1.3.7"
 
 echo "####### Updating kubernetes #########"
 mkdir -p /opt/kubernetes && cd /opt/kubernetes
