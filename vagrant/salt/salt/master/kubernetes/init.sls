@@ -122,7 +122,6 @@ kube-proxy-config:
      - source: salt://master/kubernetes/cfg/proxy
      - mode: 644
      - template: jinja
-
 ## Configuration file for all auth with api server ##
 kubeconfig:
    file.managed:
