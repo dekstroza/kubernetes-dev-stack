@@ -1,9 +1,9 @@
 include:
    - minion.kubernetes.users
 
-var-run-kubernetes-dir:
+var-lib-kubernetes-dir:
    file.directory:
-     - name: /var/run/kubernetes
+     - name: /var/lib/kubernetes
      - user: kube
      - group: kube
      - makedirs: True
