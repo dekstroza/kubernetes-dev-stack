@@ -26,12 +26,10 @@ kube-apiserver-running:
     - name: kube-apiserver
     - watch:
       - file: /etc/kubernetes/apiserver
-      - file: /var/lib/kubelet/kubeconfig
       - file: /var/lib/kubernetes/authorization-policy.json
     - require:
       - service: docker
       - file: /etc/kubernetes/apiserver
-      - file: /var/lib/kubelet/kubeconfig
       - file: /var/lib/kubernetes/authorization-policy.json
       - cmd: generate-certs
 
@@ -40,7 +38,6 @@ kube-controller-manager-running:
     - name: kube-controller-manager
     - require:
       - file: /etc/kubernetes/controller-manager
-      - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
       - service: docker
 
@@ -49,7 +46,6 @@ kube-scheduler-running:
     - name: kube-scheduler
     - require:
       - file: /etc/kubernetes/scheduler
-      - file: /var/lib/kubelet/kubeconfig
       - service: kube-apiserver
       - service: docker
 
@@ -94,9 +90,18 @@ generate-certs:
     - user: root
     - template: jinja
 
+generate-minion-cert:
+   file.managed:
+     - name: /usr/sbin/gen-minion-cert.sh
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://master/pre-start-scripts/gen-minion-cert.sh
+     - mode: 755
+
 kubectl-setup-root:
   cmd.run:
-    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/run/kubernetes/ca.crt  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
+    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/lib/kubernetes/ca.pem  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
     - user: root
     - template: jinja
     - require:
@@ -104,7 +109,7 @@ kubectl-setup-root:
 
 kubectl-setup-vagrant:
   cmd.run:
-    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/run/kubernetes/ca.crt  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
+    - name: kubectl config set-cluster kubernetes --certificate-authority=/var/lib/kubernetes/ca.pem  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
     - user: vagrant
     - template: jinja
     - require:

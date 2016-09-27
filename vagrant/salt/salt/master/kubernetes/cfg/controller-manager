@@ -5,4 +5,4 @@
 # defaults from config and apiserver should be adequate
 
 # Add your own!
-KUBE_CONTROLLER_MANAGER_ARGS="--master=https://{{ master_ip }}:6443 --kubeconfig=/var/lib/kubelet/kubeconfig --service-account-private-key-file=/var/run/kubernetes/kubernetes-master.key --service-cluster-ip-range={{ pillar['service_cluster_cidr'] }} --root-ca-file=/var/run/kubernetes/ca.crt"
+KUBE_CONTROLLER_MANAGER_ARGS="--master=http://{{ master_ip }}:8080 --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem --service-cluster-ip-range={{ pillar['service_cluster_cidr'] }} --root-ca-file=/var/lib/kubernetes/ca.pem"
