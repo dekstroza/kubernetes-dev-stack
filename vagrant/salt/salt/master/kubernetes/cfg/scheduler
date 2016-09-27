@@ -1,8 +1,10 @@
+{% set master_ip = salt['grains.get']('master_ip') %}
 ###
 # kubernetes scheduler config
 
 # default config should be adequate
 
 # Add your own!
-KUBE_SCHEDULER_ARGS="--kubeconfig=/var/lib/kubelet/kubeconfig"
+KUBE_SCHEDULER_ARGS="--master=http://{{ master_ip }}:8080"
+
 
