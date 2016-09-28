@@ -85,7 +85,7 @@
         "metadata": {
           "provider": "parallels",
           "created_at": "{{timestamp}}",
-          "version": "1.4.8"
+          "version": "1.4.11"
         }
      },
      {
@@ -95,7 +95,7 @@
         "metadata": {
           "provider": "virtualbox",
           "created_at": "{{timestamp}}",
-	  "version": "1.4.9"
+	  "version": "1.4.11"
         }
      }
  ]]
