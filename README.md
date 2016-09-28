@@ -21,9 +21,9 @@ Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has l
 **This little demo was created as development environment, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.4, xfs, ext4, lvm or zfs
+- Centos 7.2 kernel 4.7.5, xfs, ext4, lvm or zfs
 - Docker 1.12.1, overlay storage driver
-- Kubernetes 1.3.7 with cluster-addons
+- Kubernetes 1.4.0 with cluster-addons
 - Flanneld 0.5.5
 - Saltstack 2015.5.10 (Lithium)
 
