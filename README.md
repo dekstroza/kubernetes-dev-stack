@@ -3,7 +3,7 @@
 ## Background
 Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac.
 
-Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.4, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
+Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.5, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
 
 #### overlay2 with xfs or ext4
 
@@ -97,7 +97,7 @@ Kubernetes master should be up and running for you:
     kubectl cluster-info
 
     ## and open up Grafana url shown in your browser.
-    ## NOTE: Due to unresolved issue, if accessing any of these urls, use http instead of https and port 8080 instead of 6443, same links cluster-info command shows just http and port 8080 - this will be resolved shortly.
+    ## NOTE: Cluster info command shows urls with https on port 6443, which in turn requires authentication ( to talk to     kubernetes api server), to avoid authentication use http and port 8080 which is left unsecured.
 
 Upon starting dns - depending how fast your network is, it might take a up to a minute or two for docker to pull required images. DNS server will be at 10.0.0.10 and serve domain **dekstroza.local** (read on to see how to change domain).
 
