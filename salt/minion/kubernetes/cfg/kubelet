@@ -4,13 +4,13 @@
 {% set master_ip = salt['grains.get']('master_ip') %}
 
 # The address for the info server to serve on (set to 0.0.0.0 or "" for all interfaces)
-KUBELET_ADDRESS="--address={{ salt['network.interfaces']()['eth1']['inet'][0]['address'] }}"
+KUBELET_ADDRESS="--address={{ salt['network.interfaces']()['eth0']['inet'][0]['address'] }}"
 
 # The port for the info server to serve on
 KUBELET_PORT="--port=10250"
 
 # You may leave this blank to use the actual hostname
-KUBELET_HOSTNAME="--hostname_override={{ salt['network.interfaces']()['eth1']['inet'][0]['address'] }}"
+KUBELET_HOSTNAME="--hostname_override={{ salt['network.interfaces']()['eth0']['inet'][0]['address'] }}"
 
 # location of the api-server
 {% set master_ip = salt['grains.get']('master_ip') %}

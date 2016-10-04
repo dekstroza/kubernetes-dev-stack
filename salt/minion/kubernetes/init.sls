@@ -86,11 +86,11 @@ kubectl-config:
      - template: jinja
      - makedirs: True
 
-kubectl-config-vagrant:
+kubectl-config-edejket:
    file.managed:
-     - name: /home/vagrant/.kube/config
-     - user: vagrant
-     - group: vagrant
+     - name: /home/edejket/.kube/config
+     - user: edejket
+     - group: edejket
      - makedirs: True
      - source: salt://minion/kubernetes/cfg/kubectl-config
      - mode: 644

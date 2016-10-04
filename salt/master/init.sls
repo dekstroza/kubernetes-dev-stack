@@ -107,10 +107,10 @@ kubectl-setup-root:
     - require:
       - cmd: generate-certs
 
-kubectl-setup-vagrant:
+kubectl-setup-edejket:
   cmd.run:
     - name: kubectl config set-cluster kubernetes --certificate-authority=/var/lib/kubernetes/ca.pem  --embed-certs=true --server=https://{{ master_ip }}:6443 && kubectl config set-credentials admin --token chAng3m3 && kubectl config set-context default-context --cluster=kubernetes --user=admin && kubectl config use-context default-context
-    - user: vagrant
+    - user: edejket
     - template: jinja
     - require:
       - cmd: generate-certs
