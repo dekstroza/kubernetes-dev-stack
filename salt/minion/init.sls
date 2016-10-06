@@ -28,7 +28,7 @@ kubelet-running:
       - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
-      - cmd: setup-ca-from-master
+      - cmd: generate-certs
 
 kube-proxy-running:
   service.running:
@@ -38,11 +38,11 @@ kube-proxy-running:
     - require:
       - file: /etc/kubernetes/proxy
       - service: kubelet
-      - cmd: setup-ca-from-master
+      - cmd: generate-certs
 
-setup-ca-from-master:
+generate-certs:
   cmd.script:
-    - source: salt://minion/post-boot-scripts/copy-master-ca.sh
+    - source: salt://master/pre-start-scripts/generate-certs.sh
     - user: root
     - template: jinja
 
