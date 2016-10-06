@@ -27,7 +27,7 @@ exit
 "
 expect -c "
 set timeout 1
-spawn ssh edejket@{{ master_ip }} sudo /usr/sbin/gen-minion-cert.sh $HOST_IP
+spawn ssh -t edejket@{{ master_ip }} sudo /usr/sbin/gen-minion-cert.sh $HOST_IP
 expect yes/no { send yes\r ; exp_continue }
 expect password: { send edejket\r }
 expect 100%

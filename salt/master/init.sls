@@ -76,14 +76,6 @@ kube-proxy:
       - file: /var/lib/kubelet/kubeconfig
       - service: kubelet
 
-create-routing-scripts:
-  cmd.script:
-    - source: salt://master/post-boot-scripts/configure.sh
-    - user: root
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
 generate-certs:
   cmd.script:
     - source: salt://master/pre-start-scripts/generate-certs.sh
