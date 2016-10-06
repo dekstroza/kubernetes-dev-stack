@@ -4,7 +4,7 @@
 HOST_IP=$(ip -4 -o addr show dev eth0| awk '{split($4,a,"/");print a[1]}')
 
 function generate_ip_list {
-grep "roles" /etc/salt/grains | grep "kube-master"
+grep "\- kube-master" /etc/salt/grains
 if [ $? -eq 0 ]; then
 	echo "\"$HOST_IP\",\"10.0.0.1\""
 else
