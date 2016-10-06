@@ -86,11 +86,11 @@ kubectl-config:
      - template: jinja
      - makedirs: True
 
-kubectl-config-edejket:
+kubectl-config-centos:
    file.managed:
-     - name: /home/edejket/.kube/config
-     - user: edejket
-     - group: edejket
+     - name: /home/centos/.kube/config
+     - user: centos
+     - group: centos
      - makedirs: True
      - source: salt://minion/kubernetes/cfg/kubectl-config
      - mode: 644

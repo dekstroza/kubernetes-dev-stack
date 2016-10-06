@@ -1,84 +1,55 @@
 #!/bin/bash
 
-{% set master_ip = salt['grains.get']('master_ip') %}
 
-mkdir /opt/certs && cd /opt/certs
+HOST_IP=$(ip -4 -o addr show dev eth0| awk '{split($4,a,"/");print a[1]}')
 
-echo '{
-"signing": {
-"default": {
-"expiry": "8760h"
-    },
-    "profiles": {
-    "kubernetes": {
-    "usages": ["signing", "key encipherment", "server auth", "client auth"],
-    "expiry": "8760h"
-      }
-    }
-  }
-}' > ca-config.json
+function generate_ip_list {
+grep "roles" /etc/salt/grains | grep "kube-master"
+if [ $? -eq 0 ]; then
+	echo "\"$HOST_IP\",\"10.0.0.1\""
+else
+	echo "\"$HOST_IP\""
+fi	
+}
 
-echo '{
-"CN": "Kubernetes",
-"key": {
-"algo": "rsa",
-"size": 2048
-  },
-  "names": [
-  {
-	  "C": "IE",
-	  "L": "Athlone",
-	  "O": "Kubernetes",
-	  "OU": "CA",
-	  "ST": "Westmeath"
-  }
-  ]
-}' > ca-csr.json
+mkdir -p /opt/certs/$HOST_IP && cd /opt/certs/$HOST_IP
+cat > $HOST_IP-csr.json <<EOF 
+{
+	"CN": "kubernetes",
+	"hosts": [
+	$(generate_ip_list)
+	],
+	"key": {
+	"algo": "rsa",
+	"size": 2048
+},
+"names": [
+{
+	"C": "IE",
+	"L": "Athlone",
+	"O": "Kubernetes",
+	"OU": "Cluster",
+	"ST": "Westmeath"
+}
+]
+}
+EOF
 
-cfssl gencert -initca ca-csr.json | cfssljson -bare ca
-mkdir root-ca
-mv ca-key.pem root-ca/
-mv ca.csr root-ca/
-mv ca.pem root-ca/
-
-mkdir kube-master
-echo '{
-"CN": "kubernetes",
-"hosts": [
-"10.0.0.1",
-"{{ master_ip }}"
-],
-"key": {
-"algo": "rsa",
-"size": 2048
-  },
-  "names": [
-  {
-	  "C": "IE",
-	  "L": "Athlone",
-	  "O": "Kubernetes",
-	  "OU": "Cluster",
-	  "ST": "Westmeath"
-  }
-  ]
-}' > kube-master/kubernetes-csr.json
-
-cd kube-master
 cfssl gencert \
 	-ca=../root-ca/ca.pem \
 	-ca-key=../root-ca/ca-key.pem \
 	-config=../ca-config.json \
 	-profile=kubernetes \
-	../kube-master/kubernetes-csr.json | cfssljson -bare kubernetes
-cd ..
+	$HOST_IP-csr.json | cfssljson -bare kubernetes
 
+chmod +r /opt/certs/$HOST_IP/ -R
+
+## insert copy part here ##
 mkdir -p /var/lib/kubernetes
 
-cp root-ca/ca.csr /var/lib/kubernetes/
-cp root-ca/ca-key.pem /var/lib/kubernetes/
-cp root-ca/ca.pem /var/lib/kubernetes/
-cp kube-master/kubernetes-key.pem /var/lib/kubernetes/
-cp kube-master/kubernetes.csr /var/lib/kubernetes/
-cp kube-master/kubernetes.pem /var/lib/kubernetes/
+cp -f ../root-ca/ca-key.pem /var/lib/kubernetes/
+cp -f ../root-ca/ca.pem /var/lib/kubernetes/
+cp -f kubernetes-key.pem /var/lib/kubernetes/
+cp -f kubernetes.pem /var/lib/kubernetes/
 chmod +r /var/lib/kubernetes/ -R
 
