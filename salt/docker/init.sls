@@ -12,7 +12,7 @@ docker-running:
 
 docker-reload:
   cmd.run:
-    - name: service docker restart
+    - name: systemctl daemon-reload && service docker stop && rm -rf /var/lib/docker/ && service docker start
     - unless: docker info | grep "Storage Driver" | grep "overlay2"
     - require:
       - service: docker

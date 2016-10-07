@@ -30,6 +30,7 @@ kube-apiserver-running:
     - require:
       - file: /etc/kubernetes/apiserver
       - file: /var/lib/kubernetes/authorization-policy.json
+      - service: docker
       - cmd: generate-certs
 
 kube-controller-manager-running:

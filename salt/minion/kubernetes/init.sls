@@ -54,7 +54,16 @@ kube-config:
      - source: salt://minion/kubernetes/cfg/config
      - mode: 644
      - template: jinja
-
+kubeconfig:
+   file.managed:
+     - name: /var/lib/kubelet/kubeconfig
+     - user: root
+     - group: root
+     - makedirs: True
+     - source: salt://minion/kubernetes/cfg/kubeconfig
+     - mode: 644
+     - template: jinja
+     - makedirs: True
 kubelet-config:
    file.managed:
      - name: /etc/kubernetes/kubelet

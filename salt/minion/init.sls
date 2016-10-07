@@ -24,10 +24,12 @@ kubelet-running:
     - watch:
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
+      - file: /var/lib/kubelet/kubeconfig
     - require:
       - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
+      - file: /var/lib/kubelet/kubeconfig
       - cmd: generate-certs
 
 kube-proxy-running:
@@ -35,8 +37,10 @@ kube-proxy-running:
     - name: kube-proxy
     - watch:
       - file: /etc/kubernetes/proxy
+      - file: /var/lib/kubelet/kubeconfig
     - require:
       - file: /etc/kubernetes/proxy
+      - file: /var/lib/kubelet/kubeconfig
       - service: kubelet
       - cmd: generate-certs
 
