@@ -53,6 +53,7 @@ kubelet:
       - file: /etc/kubernetes/kubelet
       - file: /var/lib/kubelet/kubeconfig
     - require:
+      - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
       - file: /var/lib/kubelet/kubeconfig
@@ -65,6 +66,7 @@ kube-proxy:
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
     - require:
+      - service: docker
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
