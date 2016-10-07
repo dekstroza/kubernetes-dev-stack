@@ -41,7 +41,7 @@ kube-proxy-running:
     - require:
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
-      - service: kubelet
+      - service: docker
       - cmd: generate-certs
 
 generate-certs:

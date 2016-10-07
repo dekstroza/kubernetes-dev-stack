@@ -21,22 +21,6 @@ kubernetes-conf:
      - makedirs: True
      - source: salt://minion/kubernetes/cfg/kubernetes.conf
      - mode: 644
-kube-proxy-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kube-proxy.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://minion/kubernetes/cfg/kube-proxy.service
-     - mode: 644
-kubelet-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kubelet.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://minion/kubernetes/cfg/kubelet.service
-     - mode: 644
 kubernetes-accounting-conf:
    file.managed:
      - name: /etc/systemd/system.conf.d/kubernetes-accounting.conf

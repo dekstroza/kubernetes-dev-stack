@@ -7,30 +7,6 @@ var-run-kubernetes-dir:
      - user: kube
      - group: kube
      - makedirs: True 
-kube-apiserver-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kube-apiserver.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://master/kubernetes/cfg/kube-apiserver.service
-     - mode: 644
-kube-controller-manager-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kube-controller-manager.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://master/kubernetes/cfg/kube-controller-manager.service
-     - mode: 644
-kube-scheduler-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kube-scheduler.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://master/kubernetes/cfg/kube-scheduler.service
-     - mode: 644
 kubernetes-conf:
    file.managed:
      - name: /usr/lib/tmpfiles.d/kubernetes.conf
@@ -38,22 +14,6 @@ kubernetes-conf:
      - group: root
      - makedirs: True
      - source: salt://master/kubernetes/cfg/kubernetes.conf
-     - mode: 644
-kube-proxy-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kube-proxy.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://master/kubernetes/cfg/kube-proxy.service
-     - mode: 644
-kubelet-service:
-   file.managed:
-     - name: /usr/lib/systemd/system/kubelet.service
-     - user: root
-     - group: root
-     - makedirs: True
-     - source: salt://master/kubernetes/cfg/kubelet.service
      - mode: 644
 kubernetes-accounting-conf:
    file.managed:
@@ -72,7 +32,6 @@ kube-apiserver-config:
      - source: salt://master/kubernetes/cfg/apiserver
      - mode: 644
      - template: jinja
-
 kubernetes-config:
    file.managed:
      - name: /etc/kubernetes/config
@@ -82,7 +41,6 @@ kubernetes-config:
      - source: salt://master/kubernetes/cfg/config
      - mode: 644
      - template: jinja
-
 kube-controller-manager:
    file.managed:
      - name: /etc/kubernetes/controller-manager
