@@ -61,7 +61,7 @@ kube-proxy:
     - name: kube-proxy
     - require:
       - service: docker
-      - kubelet
+      - service: kubelet
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
       - cmd: generate-certs
