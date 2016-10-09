@@ -49,10 +49,6 @@ kube-scheduler-running:
 kubelet:
   service.running:
     - name: kubelet
-    - watch:
-      - file: /etc/kubernetes/config
-      - file: /etc/kubernetes/kubelet
-      - file: /var/lib/kubelet/kubeconfig
     - require:
       - service: docker
       - file: /etc/kubernetes/config
@@ -63,13 +59,12 @@ kubelet:
 kube-proxy:
   service.running:
     - name: kube-proxy
-    - watch:
-      - file: /etc/kubernetes/proxy
-      - file: /var/lib/kubelet/kubeconfig
     - require:
       - service: docker
+      - kubelet
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
+      - cmd: generate-certs
 
 generate-certs:
   cmd.script:
