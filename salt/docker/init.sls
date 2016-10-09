@@ -8,4 +8,5 @@ docker-running:
       - file: docker-network-config
       - file: docker-storage-config
       - service: flanneld
+      - cmd: docker-config-storage-driver
 

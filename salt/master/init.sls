@@ -30,19 +30,20 @@ kube-apiserver-running:
     - require:
       - file: /etc/kubernetes/apiserver
       - file: /var/lib/kubernetes/authorization-policy.json
-      - service: docker
       - cmd: generate-certs
 
 kube-controller-manager-running:
   service.running:
     - name: kube-controller-manager
     - require:
+      - service: kube-apiserver
       - file: /etc/kubernetes/controller-manager
 
 kube-scheduler-running:
   service.running:
     - name: kube-scheduler
     - require:
+      - service: kube-apiserver
       - file: /etc/kubernetes/scheduler
 
 kubelet:
@@ -57,17 +58,16 @@ kubelet:
       - file: /etc/kubernetes/config
       - file: /etc/kubernetes/kubelet
       - file: /var/lib/kubelet/kubeconfig
+      - cmd: generate-certs
 
 kube-proxy:
   service.running:
     - name: kube-proxy
     - watch:
-      - file: /etc/kubernetes/config
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
     - require:
       - service: docker
-      - file: /etc/kubernetes/config
       - file: /etc/kubernetes/proxy
       - file: /var/lib/kubelet/kubeconfig
 
