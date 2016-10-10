@@ -15,14 +15,6 @@ nfs-server-alias:
       - nfs
       - nfs.{{ pillar['dns_domain'] }}
 
-nfs-default-shares:
-  cmd.run:
-    - name: mkdir -p /opt/enm/versant_data /opt/enm/models /opt/enm/dps && echo -e '/opt/enm/versant_data *(rw,sync,no_root_squash,insecure)' >> /etc/exports && echo -e '/opt/enm/models *(rw,sync,no_root_squash,insecure)' >> /etc/exports && echo -e '/opt/enm/dps *(rw,sync,no_root_squash,insecure)' >> /etc/exports && exportfs -a && exportfs
-    - user: root
-    - require:
-      - service: nfs
-    - unless: ls -al /opt/enm > /dev/null 2>&1
-
 firewalld:
   service.dead:
     - name: firewalld

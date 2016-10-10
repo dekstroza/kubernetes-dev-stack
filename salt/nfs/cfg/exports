@@ -1,2 +1,5 @@
 /opt/docker-registry *(rw,sync,no_root_squash,insecure)
+/opt/enm/versant_data *(rw,sync,no_root_squash,insecure)
+/opt/enm/models *(rw,sync,no_root_squash,insecure)
+/opt/enm/dps *(rw,sync,no_root_squash,insecure)
 
