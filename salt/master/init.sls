@@ -8,13 +8,20 @@ include:
 permissive:
     selinux.mode
 
-dekstroza-nfs-server:
+nfs-server-alias:
   host.present:
     - ip: {{ nfs_ip }}
     - names:
       - nfs
       - nfs.{{ pillar['dns_domain'] }}
 
+nfs-default-shares:
+  cmd.run:
+    - name: mkdir -p /opt/enm/versant_data /opt/enm/models /opt/enm/dps && echo -e '/opt/enm/versant_data *(rw,sync,no_root_squash,insecure)' >> /etc/exports && echo -e '/opt/enm/models *(rw,sync,no_root_squash,insecure)' >> /etc/exports && echo -e '/opt/enm/dps *(rw,sync,no_root_squash,insecure)' >> /etc/exports && exportfs -a && exportfs
+    - user: root
+    - require:
+      - service: nfs
+    - unless: ls -al /opt/enm > /dev/null 2>&1
 
 firewalld:
   service.dead:
@@ -87,4 +94,40 @@ kubectl-setup-centos:
     - template: jinja
     - require:
       - cmd: generate-certs
+
+run-dns:
+  cmd.run:
+    - name: kubectl create -f /etc/kubernetes/dns/
+    - user: {{ pillar['cloud-user'] }}
+    - unless: kubectl get po --namespace=kube-system | grep dns > /dev/null 2>&1
+    - require:
+      - file: /etc/kubernetes/dns/skydns-rc.yaml
+      - file: /etc/kubernetes/dns/skydns-svc.yaml
+      - service: kube-apiserver
+      - service: kube-controller-manager
+      - service: kube-scheduler
+run-dashboard:
+  cmd.run:
+    - name: kubectl create -f /etc/kubernetes/kubernetes-dashboard/
+    - user: {{ pillar['cloud-user'] }}
+    - unless: kubectl get po --namespace=kube-system | grep dashboard > /dev/null 2>&1
+    - require:
+      - file: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+      - service: kube-apiserver
+      - service: kube-controller-manager
+      - service: kube-scheduler
+run-grafana:
+  cmd.run:
+    - name: kubectl create -f /etc/kubernetes/grafana/
+    - user: {{ pillar['cloud-user'] }}
+    - unless: kubectl get po --namespace=kube-system | grep "influx|grafana|heapster" > /dev/null 2>&1
+    - require:
+      - file: /etc/kubernetes/grafana/grafana-service.yaml
+      - file: /etc/kubernetes/grafana/heapster-controller.yaml
+      - file: /etc/kubernetes/grafana/heapster-service.yaml
+      - file: /etc/kubernetes/grafana/influxdb-grafana-controller.yaml
+      - file: /etc/kubernetes/grafana/influxdb-service.yaml 
+      - service: kube-apiserver
+      - service: kube-controller-manager
+      - service: kube-scheduler
 
