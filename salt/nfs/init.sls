@@ -31,6 +31,6 @@ nfs-config-exports:
 
 create-nfs-partition:
   cmd.run:
-    - name: (echo n; echo p; echo 1; echo ; echo ; echo w) | fdisk /dev/vdc && mkfs.ext4 -F /dev/vdc && mkdir -p /opt/enm && mount /dev/vdc1 /opt/enm
+    - name: (echo n; echo p; echo 1; echo ; echo ; echo w) | fdisk /dev/vdc && mkfs.ext4 -F /dev/vdc1 && mkdir -p /opt/enm && mount /dev/vdc1 /opt/enm
     - unless: df -T | grep /dev/vdc1 | grep ext4
 
