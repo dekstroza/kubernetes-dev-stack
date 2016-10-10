@@ -8,13 +8,6 @@ include:
 permissive:
     selinux.mode
 
-nfs-server-alias:
-  host.present:
-    - ip: {{ nfs_ip }}
-    - names:
-      - nfs
-      - nfs.{{ pillar['dns_domain'] }}
-
 firewalld:
   service.dead:
     - name: firewalld
