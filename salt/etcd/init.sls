@@ -12,11 +12,8 @@ etcd-running:
 
 configure-cluster-network:
   cmd.run:
-    - name: etcdctl set /coreos.com/network/config < /etc/etcd/network.json
-    - watch:
-      - file: /etc/etcd/etcd.conf
-      - service: etcd
+    - name: sleep 5 && etcdctl set /coreos.com/network/config < /etc/etcd/network.json
     - require:
       - service: etcd
-      - file: /etc/etcd/network.json
+    - unless: etcdctl get /coreos.com/network/config
 
