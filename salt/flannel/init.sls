@@ -7,6 +7,7 @@ flannel-running:
     - name: flanneld
     - watch:
       - file: /etc/sysconfig/flanneld
+      - service: etcd
     - require:
       - service: etcd
       - file: /etc/sysconfig/flanneld
