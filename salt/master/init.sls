@@ -80,6 +80,18 @@ kubectl-setup-centos:
     - require:
       - cmd: generate-certs
 
+reload-flannel-tmp-fix:
+  cmd.run: 
+    - name: service flanneld restart
+    - require:
+      - cmd: run-dns
+      - service: docker
+      - service: flanneld
+      - service: etcd
+      - service: kubelet
+      - service: kube-proxy
+  
+
 run-dns:
   cmd.run:
     - name: kubectl create -f /etc/kubernetes/dns/
