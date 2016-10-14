@@ -29,7 +29,3 @@ docker-systemd-config-storage:
      - source: salt://docker/config-files/cfg/docker-storage.conf
      - mode: 644
 
-docker-config-storage-driver:
-  cmd.run:
-    - name: mkfs.xfs /dev/sdb && mkdir -p /var/lib/docker && mount /dev/sdb /var/lib/docker && systemctl daemon-reload
-    - unless: df -T | grep /dev/sdb | grep xfs     

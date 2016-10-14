@@ -1,22 +1,50 @@
 include:
-   - docker.config-files
+  - docker.config-files
+
 
 docker-running:
   service.running:
     - name: docker
     - require:
-      - file: docker-systemd-config-storage
-      - file: docker-network-config
-      - file: docker-systemd-config
+      - sls: docker.config-files
       - service: flanneld
-      - cmd: docker-config-storage-driver
+      - mount: /var/lib/docker
 
-docker-reload:
-  cmd.run:
-    - name: service docker restart
-    - unless: docker info | grep "Storage Driver" | grep "overlay2"
+label-docker-disk:
+  module.run:
+   - name: partition.mklabel
+   - device: {{ pillar['docker_partition_device'] }}
+   - label_type: gpt
+   - unless: fdisk -l {{ pillar['docker_partition_device'] }} | grep gpt
+
+create-docker-partition:
+  module.run:
+   - name: partition.mkpart
+   - device: {{ pillar['docker_partition_device'] }}
+   - part_type: primary
+   - start: 0%
+   - end: 100%
+   - require:
+     - module: label-docker-disk
+   - unless: fdisk -l {{ pillar['docker_partition_device'] }} | grep {{ pillar['docker_fs_partition_name'] }}
+
+docker-device: 
+  blockdev.formatted:
+    - name: {{ pillar['docker_fs_partition_name'] }}
+    - fs_type: {{ pillar['docker_fs_type'] }}
+    - unless: blkid | grep {{ pillar['docker_partition_device'] }} | grep {{ pillar['docker_fs_type'] }}
     - require:
-      - service: docker
-      - cmd: docker-config-storage-driver
+      - module: create-docker-partition
 
+mount-docker-partition:
+  mount.mounted:
+    - name: /var/lib/docker
+    - device: {{ pillar['docker_fs_partition_name'] }}
+    - fstype: {{ pillar['docker_fs_type'] }}
+    - mkmnt: True
+    - opts:
+      - defaults
+    - require:
+      - blockdev: {{ pillar['docker_fs_partition_name'] }}
+    - unless: mount | grep {{ pillar['docker_fs_partition_name'] }}
 
