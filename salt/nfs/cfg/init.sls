@@ -1,3 +1,6 @@
+include:
+  - nfs.partitioning
+
 nfs-config-exports:
    file.managed:
      - name: /etc/exports
@@ -12,22 +15,30 @@ nfs-config-exports:
      - group: root
      - mode: 777
      - makedirs: True
+     - require:
+       - sls: nfs.partitioning 
 /opt/enm/versant_data:
    file.directory:
      - user: root
      - group: root
      - mode: 777
      - makedirs: True
+     - require:
+       - sls: nfs.partitioning
 /opt/enm/models:
    file.directory:
      - user: root
      - group: root
      - mode: 777
      - makedirs: True
+     - require:
+       - sls: nfs.partitioning
 /opt/enm/dps:
    file.directory:
      - user: root
      - group: root
      - mode: 777
      - makedirs: True
+     - require:
+       - sls: nfs.partitioning
 
