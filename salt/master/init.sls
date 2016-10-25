@@ -81,7 +81,7 @@ kubectl-setup-centos:
       - cmd: generate-certs
 
 reload-flannel-tmp-fix:
-  cmd.run: 
+  cmd.run:
     - name: service flanneld restart
     - require:
       - cmd: run-dns
@@ -90,8 +90,16 @@ reload-flannel-tmp-fix:
       - service: etcd
       - service: kubelet
       - service: kube-proxy
-  
-
+label-master-node-nfs:
+  cmd.run:
+    - name: kubectl label nodes {{ master_ip }} nfs-node=true
+    - require:
+      - service: kube-apiserver
+      - service: kube-controller-manager
+      - service: kube-scheduler
+      - service: kubelet
+      - service: kube-proxy
+      - cmd: kubectl-setup-root
 run-dns:
   cmd.run:
     - name: kubectl create -f /etc/kubernetes/dns/
@@ -123,7 +131,7 @@ run-grafana:
       - file: /etc/kubernetes/grafana/heapster-controller.yaml
       - file: /etc/kubernetes/grafana/heapster-service.yaml
       - file: /etc/kubernetes/grafana/influxdb-grafana-controller.yaml
-      - file: /etc/kubernetes/grafana/influxdb-service.yaml 
+      - file: /etc/kubernetes/grafana/influxdb-service.yaml
       - service: kube-apiserver
       - service: kube-controller-manager
       - service: kube-scheduler
