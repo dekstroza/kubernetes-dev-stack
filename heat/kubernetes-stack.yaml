@@ -1,0 +1,189 @@
+heat_template_version: 2015-04-30
+description: Kubernetes cluster heat template - Dejan Kitic 2016
+
+parameters:
+  image:
+    type: string
+    description: Image used for servers
+  server_ssh_key:
+    type: string
+    description: SSH key for connecting to master and minions
+  kube-master-flavour:
+    type: string
+    description: Flavour used for kubernetes control nodes
+  kube-minion-flavour:
+    type: string
+    description: Flavour used for kubernetes worker nodes
+  floating-pool-name:
+    type: string
+    description: Name of the pool used for floating addresses
+  network-name:
+    type: string
+    description: Name of the network used in VM instances
+  docker_vol_size:
+    type: number
+    description: The size of the Cinder volume for docker images
+  num-masters:
+    type: number
+    description: Number of kubernetes master nodes (not supported yet, should be keep to 1 for now)
+  min-num-minions:
+    type: number
+    description: Minimum number of minions to be started
+  max-num-minions:
+    type: number
+    description: Maximum number of minions that can be started as a result of autoscaling due to high cpu load
+  high-cpu-load-threshold:
+    type: number
+    description: CPU load in % above which high cpu load alarm will be triggered
+  low-cpu-load-threshold:
+    type: number
+    description: CPU load in % below which low cpu load alarm will be triggered
+  scaling-up-adjustment:
+    type: number
+    description: Number of new instances to spin up as a result of autoscale
+  scaling-down-adjustment:
+    type: number
+    description: Number of new instances to spin down as a result of autoscale
+  cooldown-period:
+    type: number
+    description: Cooldown period for autoscale operations in seconds
+  alarm-high-timeout:
+    type: number
+    description: Time in seconds after which high cpu load will cause alarm
+  alarm-low-timeout:
+    type: number
+    description: Time in seconds after which low cpu load will cause alarm
+  alarm-eval-periods:
+    type: number
+    description: Alarm evaluation period
+
+resources:
+  kubernetes-master-resourcegroup:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: num-masters }
+      resource_def:
+        type: Kubernetes::Master::Server
+        properties:
+          index: "%index%"
+          image: { get_param: image }
+          kube-master-flavour: { get_param: kube-master-flavour }
+          network-name: {get_param: network-name }
+          server_ssh_key: { get_param: server_ssh_key }
+          docker_vol_size: { get_param: docker_vol_size }
+          floating-pool-name: { get_param: floating-pool-name }
+ 
+  kubernetes-minion-resourcegroup:
+    type: OS::Heat::AutoScalingGroup
+    depends_on: kubernetes-master-resourcegroup
+    properties:
+      min_size: { get_param: min-num-minions }
+      max_size: { get_param: max-num-minions }
+      resource:
+        type: Kubernetes::Minion::Server
+        properties:
+          image: { get_param: image }
+          kube-minion-flavour: { get_param: kube-minion-flavour }
+          metadata: {"metering.stack": {get_param: "OS::stack_id"}}
+          network-name: {get_param: network-name }
+          master_ip: { "Fn::Select" : [ "0", get_attr: [ kubernetes-master-resourcegroup, server_ip]] }
+          server_ssh_key: { get_param: server_ssh_key }
+          docker_vol_size: { get_param: docker_vol_size }
+
+  minion_scaleup_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: {get_resource: kubernetes-minion-resourcegroup}
+      cooldown: { get_param: cooldown-period }
+      scaling_adjustment: { get_param: scaling-up-adjustment }
+  minion_scaledown_policy:
+    type: OS::Heat::ScalingPolicy
+    properties:
+      adjustment_type: change_in_capacity
+      auto_scaling_group_id: {get_resource: kubernetes-minion-resourcegroup}
+      cooldown: { get_param: cooldown-period }
+      scaling_adjustment: { get_param: scaling-down-adjustment }
+  cpu_alarm_high:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-up if the average CPU > 50% for 1 minute
+      meter_name: cpu_util
+      statistic: avg
+      period: { get_param: alarm-high-timeout }
+      evaluation_periods: { get_param: alarm-eval-periods }
+      threshold: { get_param: high-cpu-load-threshold }
+      alarm_actions:
+        - {get_attr: [minion_scaleup_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: gt
+  cpu_alarm_low:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-down if the average CPU < 15% for 10 minutes
+      meter_name: cpu_util
+      statistic: avg
+      period: { get_param: alarm-low-timeout }
+      evaluation_periods: { get_param: alarm-eval-periods }
+      threshold: { get_param: low-cpu-load-threshold }
+      alarm_actions:
+        - {get_attr: [minion_scaledown_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: lt
+outputs:
+  dashboard:
+    value:
+      str_replace:
+        template: >
+          http://host:8080/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard/#/namespace?namespace=_all
+        params:
+          host: { "Fn::Select" : [ "0", get_attr: [kubernetes-master-resourcegroup, fp_address]] }
+    description: >
+      This is the URL for kubernetes dashboard, exposed over floating ip address
+      of master server. Please note it can take up to few minutes (depending on your network speed) to start
+      container with dashboard.
+  grafana:
+    value:
+      str_replace:
+        template: >
+          http://host:8080/api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/
+        params:
+          host: { "Fn::Select" : [ "0", get_attr: [kubernetes-master-resourcegroup, fp_address]] }
+    description: >
+      This is the URL for Grafana monitoring, exposed over floating ip address
+      of master server. Please note it can take several minutes (depending on your network speed)
+      to start all containers required for Grafana. You can monitor progress using kubernetes dashboard as it
+      starts fairly quickly. Once you see all Grafana containers deployed you can used above address to access it.
+  scale_up_url:
+    description: >
+      This URL is the webhook to scale up the autoscaling group.  You
+      can invoke the scale-up operation by doing an HTTP POST to this
+      URL; no body nor extra headers are needed.
+    value: {get_attr: [minion_scaleup_policy, alarm_url]}
+  scale_dn_url:
+    description: >
+      This URL is the webhook to scale down the autoscaling group.
+      You can invoke the scale-down operation by doing an HTTP POST to
+      this URL; no body nor extra headers are needed.
+    value: {get_attr: [minion_scaledown_policy, alarm_url]}
+  ceilometer_query:
+    value:
+      str_replace:
+        template: >
+          ceilometer statistics -m cpu_util
+          -q metadata.user_metadata.stack=stackval -p 600
+        params:
+          stackval: { get_param: "OS::stack_id" }
+    description: >
+      This is a Ceilometer query for statistics on the cpu_util meter
+      Samples about OS::Nova::Server instances in this stack.  The -q
+      parameter selects Samples according to the subject's metadata.
+      When a VM's metadata includes an item of the form metering.X=Y,
+      the corresponding Ceilometer resource has a metadata item of the
+      form user_metadata.X=Y and samples about resources so tagged can
+      be queried with a Ceilometer query term of the form
+      metadata.user_metadata.X=Y.  In this case the nested stacks give
+      their VMs metadata that is passed as a nested stack parameter,
+      and this stack passes a metadata of the form metering.stack=Y,
+      where Y is this stack's ID.
+

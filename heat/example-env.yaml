@@ -1,0 +1,24 @@
+parameters:
+  image: kubernetes # NAME OF THE VM IMAGE
+  server_ssh_key: mykeyname #NAME OF YOUR SSH KEY ON OPENSTACK
+  kube-master-flavour: m1.medium # NAME OF THE FLAVOUR FOR MASTER
+  kube-minion-flavour: m1.medium # NAME OF THE FLAVOUR FOR MINION
+  floating-pool-name: floating-pool # NAME OF THE POOL WITH FLOATING ADDRESSES
+  network-name: default-network # NAME OF THE NETWORK TO USE
+  docker_vol_size: 10 # SIZE IN GB FOR THE DOCKER PARTITION
+  num-masters: 1 # NUMBER OF MASTERS, FOR NOW ALWAYS 1
+  min-num-minions: 3 # MIN NUMBER OF MINIONS
+  max-num-minions: 5 # MAX NUMBER OF MINIONS, FOR AUTOSCALING
+  high-cpu-load-threshold: 50 #CPU THRESHOLD HIGH
+  low-cpu-load-threshold: 15 # CPU THRESHOLD LOW
+  scaling-up-adjustment: 1 # SCALING UP BY 1 INSTANCE
+  scaling-down-adjustment: -1 # SCALING DOWN BY 1 INSTANCE
+  cooldown-period: 60 # AUTOSCALE COOLDOWN PERIOD IN SECONDS
+  alarm-high-timeout: 900 # ALARM TIMEOUT IN SECONDS FOR AUTOSCALING UP
+  alarm-low-timeout: 900  # ALARM TIMEOUT IN SECONDS FOR AUTOSCALING DOWN
+  alarm-eval-periods: 1 # ALARM EVAL PERIOD
+
+resource_registry:
+  Kubernetes::Master::Server: fragments/master-instance.yaml
+  Kubernetes::Minion::Server: fragments/minion-instance.yaml
+
