@@ -4,7 +4,7 @@
 ## Backrgound
 This branch contains salt configuration and heat template which can deploy kubernetes on OpenStack. In order to run it, you will need
 VM image with kubernetes binaries and saltstack. This branch will have packer configuration to build the VM image soon, or alternatively
-you can use my image from here: http://coming-really-soon.com
+you can use my image from here: http://dekstroza.io/kubernetes.img
 
 
 ## How to run
