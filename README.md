@@ -3,7 +3,7 @@
 ## Background
 Small proof of concept for running kubernetes cluster, specifically intended for development environment. Can create kubernetes cluster compromised of one master and arbitrary number of minions. Can run on Linux, Windows or Mac.
 
-Vagrant box is based on Centos 7.2 with latest stable kernel 4.7.5, docker 1.12.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems. 
+Vagrant box is based on Centos 7.3 with latest stable kernel 4.9.5, docker 1.13.1, selinux will be set to permissive mode, and firewall will be down. Intention is to keep up to date version of Centos, kernel, docker and kubernetes - should always be the latest (see bellow for more details on current versions). There are several branches with different setups of docker storage drivers and filesystems.
 
 #### overlay2 with xfs or ext4
 
@@ -14,17 +14,17 @@ Master branch has docker running with overlay2 storage driver backed by xfs.
 
 You can also checkout **zfs-filesystem** branch, which has docker running with zfs storage driver. In case of zfs, kernel driver is using dkms, so do not update kernel, as it will require zfs kernel module rebuild - you have been warned !
 
-#### lvm block device 
+#### lvm block device
 
 Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has lvm storage driver backed by blockdevice (keeping in mind this is just a virtual machine and blockdevice is virtual sata device added to the vm)
 
 **This little demo was created as development environment, and should not be used in production, as kubernetes is configured with minimal security.**
 
 ### What's inside the tin can
-- Centos 7.2 kernel 4.7.5, xfs, ext4, lvm or zfs
-- Docker 1.12.1, overlay storage driver
-- Kubernetes 1.4.0 with cluster-addons
-- Flanneld 0.5.5
+- Centos 7.3 kernel 4.9.5, xfs, ext4, lvm or zfs
+- Docker 1.13.1, overlay storage driver
+- Kubernetes 1.5.2 with cluster-addons
+- Flanneld 0.7.0
 - Saltstack 2015.5.10 (Lithium)
 
 
@@ -33,6 +33,8 @@ Or if you are fan of lvm, you can checkout *lvm-blockdevice* branch, which has l
 2. [Vagrant 1.8.5 or greater](http://www.vagrantup.com)
 3. VT-x/AMD-v virtualization must be enabled in BIOS, as virtual machines run 64bit guests
 4. If running in bridged mode (which is default), DHCP is expected to assign address to vagrant box(s), otherwise you can  export NETWORK_TYPE=private before starting master and minions, and they will get private addresses, and will not be accessible from outside (also they have to be on the same machine, setting access and having them on separate machines is also possible with some NAT magic, but that is beyond the scope of this little project).
+5. Make sure to use latest version of vagrant boxes (1.5.0), there was change
+   in flannel configuration which is not compatible with previous versions.
 
 ### Getting started
 In order to get started, first we need to start kube master, after which we can start multiple minions anywhere on the network as long as they can reach master.
@@ -69,17 +71,17 @@ Kubernetes master should be up and running for you:
 
     ## Bellow will show you all kube memebers
     kubectl get nodes
-    
+
     ## Bellow will show you state of cluster
     kubectl get cs
-    
+
     ## Bellow will show everything that currently runs
     ## in kube-system namespace (dns, ui, grafana etc..)
     kubectl get po --all-namespaces
 
     ## Gives you cluster info, all cluster services running
     kubectl cluster-info
-    
+
     ## You can start dns server with (continue reading to see how to change/specify your own dns domain instead of default)
     kubectl create -f /etc/kubernetes/dns/
 

@@ -1,4 +1,4 @@
-  
+
 flannel-config:
   file.managed:
     - name: /etc/sysconfig/flanneld

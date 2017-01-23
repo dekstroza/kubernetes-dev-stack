@@ -1,13 +1,15 @@
 #!/bin/bash
-echo "####### Updating flannel #########"
+
+VERSION="0.7.0"
+echo "####### Updating flannel to version $VERSION #########"
 CWD=`pwd`
 cd /tmp
-curl -L -k https://github.com/coreos/flannel/releases/download/v0.5.5/flannel-0.5.5-linux-amd64.tar.gz -o flannel-0.5.5-linux-amd64.tar.gz
-tar zxvf flannel-0.5.5-linux-amd64.tar.gz
-cp -f flannel-0.5.5/flanneld /bin/flanneld
-cp -f flannel-0.5.5/mk-docker-opts.sh /usr/libexec/flannel/mk-docker-opts.sh
-rm -rf flannel-0.5.5
-rm -rf flannel-0.5.5-linux-amd64.tar.gz
+curl -L -k https://github.com/coreos/flannel/releases/download/v$VERSION/flannel-v$VERSION-linux-amd64.tar.gz -o flannel-$VERSION-linux-amd64.tar.gz
+tar zxvf flannel-$VERSION-linux-amd64.tar.gz
+cp -f flanneld /bin/flanneld
+cp -f mk-docker-opts.sh /usr/libexec/flannel/mk-docker-opts.sh
+rm -rf flannel-$VERSION
+rm -rf flannel-$VERSION-linux-amd64.tar.gz
 echo "####### Flannel update complete #########"
 cd $CWD
 
