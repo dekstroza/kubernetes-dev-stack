@@ -117,7 +117,8 @@ run-dashboard:
     - user: {{ pillar['cloud-user'] }}
     - unless: kubectl get po --namespace=kube-system | grep dashboard > /dev/null 2>&1
     - require:
-      - file: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+      - file: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard-rc.yaml
+      - file: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard-svc.yaml
       - service: kube-apiserver
       - service: kube-controller-manager
       - service: kube-scheduler
