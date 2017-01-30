@@ -6,7 +6,7 @@ var-run-kubernetes-dir:
      - name: /var/run/kubernetes
      - user: kube
      - group: kube
-     - makedirs: True
+     - makedirs: True 
 kubernetes-conf:
    file.managed:
      - name: /usr/lib/tmpfiles.d/kubernetes.conf
@@ -140,28 +140,17 @@ dns-svc-setup:
     - require:
       - service: kube-proxy
 
-kubernetes-dashboard-rc:
+kubernetes-dashboard:
   file.managed:
-    - name: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard-rc.yaml
+    - name: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
     - makedirs: True
     - user: root
     - group: root
-    - source: salt://master/kubernetes/cluster-addons/kubernetes-dashboard/cfg/kubernetes-dashboard-rc.yaml
-    - template: jinja
-    - require:
-      - service: kube-proxy
-
-kubernetes-dashboard-svc:
-  file.managed:
-    - name: /etc/kubernetes/kubernetes-dashboard/kubernetes-dashboard-svc.yaml
     - makedirs: True
-    - user: root
-    - group: root
-    - source: salt://master/kubernetes/cluster-addons/kubernetes-dashboard/cfg/kubernetes-dashboard-svc.yaml
+    - source: salt://master/kubernetes/cluster-addons/kubernetes-dashboard/cfg/kubernetes-dashboard.yaml
     - template: jinja
     - require:
       - service: kube-proxy
-
 
 kube-grafana-servicesetup:
   file.managed:
@@ -173,7 +162,7 @@ kube-grafana-servicesetup:
     - source: salt://master/kubernetes/cluster-addons/grafana/cfg/grafana-service.yaml
     - template: jinja
     - require:
-      - service: kube-proxy
+      - service: kube-proxy 
 
 kube-grafana-heapster-controller:
   file.managed:
