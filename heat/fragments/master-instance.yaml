@@ -27,6 +27,26 @@ parameters:
     description: Name of the pool with floating ip's
   index:
     type: string
+
+  auth-url:
+    type: string
+    description: Keystone authentication url
+
+  username:
+    type: string
+    description: Username for Keystone authentication
+
+  password:
+    type: string
+    description: Password for Keystone authentication
+
+  region:
+    type: string
+    description: Region of this tenant
+
+  tenant-id:
+    type: string
+    description: Tenant id
 resources:
 
   floating_ip_master:
@@ -47,6 +67,13 @@ resources:
       user_data: |
             #!/bin/bash
             echo "Running boot configuration script"
+            mkdir /etc/kubernetes
+            echo -e "[Global]" >> /etc/kubernetes/cloud.conf
+            echo -e "auth-url=$auth-url" >> /etc/kubernetes/cloud.conf
+            echo -e "username=$username" >> /etc/kubernetes/cloud.conf
+            echo -e "password=$password" >> /etc/kubernetes/cloud.conf
+            echo -e "region=$region" >> /etc/kubernetes/cloud.conf
+            echo -e "tenant-id=$tenant-id" >> /etc/kubernetes/cloud.conf
             cur_dir=$(pwd) && cd /opt/kubernetes-dev-stack && git pull && cd $cur_dir
             echo -e "roles:\n  - kube-master" >> /etc/salt/grains
             ip=$(ip -f inet -o addr show eth0 | cut -d\  -f 7 | cut -d/ -f 1) && echo -e master_ip: $ip >> /etc/salt/grains && echo -e nfs_ip: $ip >> /etc/salt/grains

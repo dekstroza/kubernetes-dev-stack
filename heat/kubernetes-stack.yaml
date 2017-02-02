@@ -56,6 +56,21 @@ parameters:
   alarm-eval-periods:
     type: number
     description: Alarm evaluation period
+  auth-url:
+    type: string
+    description: Keystone authentication url
+  username:
+    type: string
+    description: Username for Keystone authentication
+  password:
+    type: string
+    description: Password for Keystone authentication
+  region:
+    type: string
+    description: Region of this tenant
+  tenant-id:
+    type: string
+    description: Tenant id
 
 resources:
   kubernetes-master-resourcegroup:
@@ -72,7 +87,12 @@ resources:
           server_ssh_key: { get_param: server_ssh_key }
           docker_vol_size: { get_param: docker_vol_size }
           floating-pool-name: { get_param: floating-pool-name }
- 
+          auth-url: { get_param: auth-url }
+          username: { get_param: username }
+          password: { get_param: password }
+          region:   { get_param: region }
+          tenant-id:   { get_param: tenant-id }
+
   kubernetes-minion-resourcegroup:
     type: OS::Heat::AutoScalingGroup
     depends_on: kubernetes-master-resourcegroup
@@ -89,6 +109,11 @@ resources:
           master_ip: { "Fn::Select" : [ "0", get_attr: [ kubernetes-master-resourcegroup, server_ip]] }
           server_ssh_key: { get_param: server_ssh_key }
           docker_vol_size: { get_param: docker_vol_size }
+          auth-url: { get_param: auth-url }
+          username: { get_param: username }
+          password: { get_param: password }
+          region: { get_param: region }
+          tenant-id: { get_param: tenant-id }
 
   minion_scaleup_policy:
     type: OS::Heat::ScalingPolicy

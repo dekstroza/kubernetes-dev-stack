@@ -17,7 +17,11 @@ parameters:
   alarm-high-timeout: 900 # ALARM TIMEOUT IN SECONDS FOR AUTOSCALING UP
   alarm-low-timeout: 900  # ALARM TIMEOUT IN SECONDS FOR AUTOSCALING DOWN
   alarm-eval-periods: 1 # ALARM EVAL PERIOD
-
+  auth-url: http://131.160.132.5:5000/v2.0 # KEYSTONE URL
+  username: myusername_on_openstack # USERNAME, not using DOMAIN/TOKENS yet
+  password: my_password # PASSWORD, not using DOMAINS/TOKENS yet
+  region: regionOne #O penstack region we re running in
+  tenant-id: f848d90b762842f2bb68065a1527cd94 # Our tenant id, or project id
 resource_registry:
   Kubernetes::Master::Server: fragments/master-instance.yaml
   Kubernetes::Minion::Server: fragments/minion-instance.yaml
