@@ -79,7 +79,7 @@ resources:
             ip=$(ip -f inet -o addr show eth0 | cut -d\  -f 7 | cut -d/ -f 1) && echo -e master_ip: $ip >> /etc/salt/grains && echo -e nfs_ip: $ip >> /etc/salt/grains
             salt-call state.highstate -l quiet
             yum -y install socat
-            kubectl label node $(ip -f inet -o addr show eth0 | cut -d\  -f 7 | cut -d/ -f 1) nfs-node=true
+            kubectl label node $(hostname -s) nfs-node=true
 
   kubernetes-master-docker_vol:
     type: OS::Cinder::Volume
