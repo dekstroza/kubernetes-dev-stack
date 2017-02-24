@@ -28,12 +28,6 @@ parameters:
   metadata:
     type: json
 
-  master_ip:
-    type: string
-    description: IP Address of kubernetes master
-  metadata:
-    type: json
-
   auth-url:
     type: string
     description: Keystone authentication url
@@ -68,6 +62,10 @@ resources:
         template: |
          #!/bin/bash
          echo "Running boot configuration script"
+         cur_dir=$(pwd) && cd /opt/kubernetes-dev-stack && git pull && cd $cur_dir
+         echo -e "roles:\n  - kube-minion" >> /etc/salt/grains
+         echo -e master_ip: $mip >> /etc/salt/grains && echo -e nfs_ip: $mip >> /etc/salt/grains
+         echo -e short_hostname: $(hostname -s) >> /etc/salt/grains
          mkdir /etc/kubernetes
          echo -e "[Global]" >> /etc/kubernetes/cloud.conf
          echo -e "auth-url=$auth-url" >> /etc/kubernetes/cloud.conf
@@ -75,13 +73,14 @@ resources:
          echo -e "password=$password" >> /etc/kubernetes/cloud.conf
          echo -e "region=$region" >> /etc/kubernetes/cloud.conf
          echo -e "tenant-id=$tenant-id" >> /etc/kubernetes/cloud.conf
-         cur_dir=$(pwd) && cd /opt/kubernetes-dev-stack && git pull && cd $cur_dir
-         echo -e "roles:\n  - kube-minion" >> /etc/salt/grains
-         echo -e master_ip: $mip >> /etc/salt/grains && echo -e nfs_ip: $mip >> /etc/salt/grains
          salt-call state.highstate -l quiet
-         yum -y install socat
         params:
          $mip: { get_param: master_ip }
+         $auth-url: { get_param: auth-url }
+         $username: { get_param: username }
+         $password: { get_param: password }
+         $region: { get_param: region }
+         $tenant-id: { get_param: tenant-id }
 
   docker_vol:
     type: OS::Cinder::Volume
